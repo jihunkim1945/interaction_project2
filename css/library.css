@@ -1,0 +1,255 @@
+/* ============================================
+   css/library.css — Component Library styles
+   ============================================ */
+
+/* ── Page shell ── */
+#library-page {
+  background: var(--white);
+  min-height: 100vh;
+  font-family: var(--font-serif);
+  color: var(--black);
+  padding: 40px 20px 80px;
+}
+
+/* ── Page header ── */
+.lib-header {
+  max-width: 960px;
+  margin: 0 auto 36px;
+  border-bottom: 3px solid var(--black);
+  padding-bottom: 16px;
+}
+
+.lib-header h1 {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: bold;
+  letter-spacing: 0.02em;
+  margin-bottom: 6px;
+}
+
+.lib-header .lib-subtitle {
+  font-size: 13px;
+  color: var(--blue-primary);
+  text-decoration: underline;
+  cursor: default;
+}
+
+.lib-meta {
+  font-size: 11px;
+  color: #666;
+  margin-top: 10px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+}
+
+/* ── Nav strip ── */
+.lib-nav {
+  max-width: 960px;
+  margin: 0 auto 32px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 12px;
+  font-size: 12px;
+  font-family: var(--font-serif);
+  line-height: 2;
+  flex-wrap: wrap;
+}
+
+.lib-nav a {
+  color: var(--blue-primary);
+  text-decoration: underline;
+  margin-right: 20px;
+  font-family: var(--font-serif);
+}
+
+.lib-nav a:hover { color: #cc0000; }
+
+/* ── Section wrapper ── */
+.lib-section {
+  max-width: 960px;
+  margin: 0 auto 52px;
+}
+
+.lib-section-title {
+  font-size: 17px;
+  font-weight: bold;
+  font-family: var(--font-serif);
+  margin-bottom: 4px;
+  padding-bottom: 4px;
+  border-bottom: 2px solid var(--black);
+}
+
+.lib-section-desc {
+  font-size: 11px;
+  color: #666;
+  margin-bottom: 16px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+  line-height: 1.6;
+}
+
+/* ── Component grid ── */
+.lib-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--black);
+  border: 1px solid var(--black);
+}
+
+.lib-grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (max-width: 720px) {
+  .lib-grid     { grid-template-columns: repeat(2, 1fr); }
+  .lib-grid-2   { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .lib-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Component card ── */
+.lib-card {
+  background: var(--white);
+  padding: 16px;
+}
+
+.lib-card-num {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: #aaa;
+  letter-spacing: 0.15em;
+  margin-bottom: 4px;
+}
+
+.lib-card-title {
+  font-weight: bold;
+  font-size: 13px;
+  margin-bottom: 4px;
+  font-family: var(--font-serif);
+}
+
+.lib-card-desc {
+  font-size: 10px;
+  color: #555;
+  margin-bottom: 14px;
+  line-height: 1.6;
+  font-family: var(--font-mono);
+}
+
+.lib-card label {
+  display: block;
+  font-size: 10px;
+  color: #333;
+  margin-bottom: 6px;
+  font-family: var(--font-mono);
+}
+
+/* ── Library card inputs (neutral, archival style) ── */
+.lib-card input[type="text"],
+.lib-card input[type="email"],
+.lib-card input[type="tel"],
+.lib-card input[type="time"],
+.lib-card input[type="number"],
+.lib-card input[type="password"],
+.lib-card input[type="search"],
+.lib-card input[type="date"] {
+  width: 100%;
+  border: 1px solid var(--black);
+  padding: 5px 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--white);
+  border-radius: 0;
+  outline: none;
+  color: var(--black);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.lib-card input[type="range"] {
+  width: 100%;
+  accent-color: var(--blue-primary);
+  cursor: pointer;
+}
+
+.lib-card input[type="color"] {
+  border: 1px solid var(--black);
+  padding: 2px;
+  width: 40px;
+  height: 26px;
+  cursor: pointer;
+  border-radius: 0;
+}
+
+.lib-card input[type="radio"],
+.lib-card input[type="checkbox"] {
+  accent-color: var(--blue-primary);
+  margin-right: 4px;
+  cursor: pointer;
+}
+
+.lib-card input[type="reset"],
+.lib-card input[type="button"] {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  cursor: pointer;
+  border: 1px solid var(--black);
+  padding: 4px 10px;
+  background: var(--white);
+  letter-spacing: 0.1em;
+}
+
+.lib-card input[type="file"] {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  cursor: pointer;
+}
+
+/* Inline radio / checkbox rows */
+.lib-radio-row,
+.lib-check-row {
+  display: flex;
+  align-items: center;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  margin-bottom: 4px;
+  color: var(--black);
+}
+
+/* ── Type badge ── */
+.lib-type-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  background: var(--black);
+  color: var(--white);
+  padding: 2px 7px;
+  letter-spacing: 0.12em;
+  margin-bottom: 8px;
+}
+
+.lib-type-badge.blue-badge { background: var(--blue-primary); }
+.lib-type-badge.red-badge  { background: #990000; }
+
+/* ── Footer ── */
+.lib-footer {
+  max-width: 960px;
+  margin: 60px auto 0;
+  border-top: 1px solid #ccc;
+  padding-top: 16px;
+  font-size: 10px;
+  color: #888;
+  font-family: var(--font-mono);
+  letter-spacing: 0.1em;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.lib-footer a {
+  color: var(--blue-primary);
+  text-decoration: underline;
+}

@@ -1,0 +1,8 @@
+Place the following files in this folder:
+
+  car-crash.gif   — animated car crash GIF for the intro page background
+  pill-choice.jpg — the Matrix red pill / blue pill scene image
+
+Both files have graceful fallbacks if absent:
+  - car-crash.gif  → canvas-animated particle background
+  - pill-choice.jpg → inline SVG hand holding pills

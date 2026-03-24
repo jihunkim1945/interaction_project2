@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>INPUT — Component Library / 25 Instances</title>
+  <link rel="stylesheet" href="global.css" />
+  <link rel="stylesheet" href="library.css" />
+</head>
+<body>
+  <div id="library-page">
+
+    <!-- ── Page header ── -->
+    <div class="lib-header">
+      <h1>INPUT — A Component Library</h1>
+      <div class="lib-subtitle">
+        An HTML &lt;input&gt; element study: 25 instances across control,
+        identity, simulation, and absurdity
+      </div>
+      <div class="lib-meta">
+        PAGES:&nbsp; index.html (1 instance)
+        &nbsp;|&nbsp; blue.html (12 instances)
+        &nbsp;|&nbsp; red.html (12 instances)
+        &nbsp;|&nbsp; TOTAL: 25
+      </div>
+    </div>
+
+    <!-- ── Navigation ── -->
+    <div class="lib-nav">
+      <a href="index.html">→ Intro Page</a>
+      <a href="blue.html">→ Blue Pill Interface</a>
+      <a href="red.html">→ Red Pill Interface</a>
+      <a href="#sec-intro">§1 Intro</a>
+      <a href="#sec-blue">§2 Blue Pill</a>
+      <a href="#sec-red">§3 Red Pill</a>
+    </div>
+
+    <!-- ================================================================
+         SECTION 1 — INTRO
+         ================================================================ -->
+    <div class="lib-section" id="sec-intro">
+      <div class="lib-section-title">§1 — Intro Choice Input (1 instance)</div>
+      <div class="lib-section-desc">The gateway. One input determines the path.</div>
+
+      <div class="lib-grid lib-grid-2" style="max-width:640px;">
+
+        <div class="lib-card">
+          <div class="lib-card-num">INSTANCE 01 / 25</div>
+          <span class="lib-type-badge">type="text"</span>
+          <div class="lib-card-title">Pill Selection</div>
+          <div class="lib-card-desc">
+            Identity bifurcation point. "red" routes to system dissolution.
+            "blue" routes to identity confirmation. Any other input triggers
+            systemic rejection. Navigation is controlled through a single
+            text field.
+          </div>
+          <label for="lib-intro-1">Make your selection</label>
+          <input type="text" id="lib-intro-1"
+                 placeholder="red or blue" maxlength="4" autocomplete="off" />
+        </div>
+
+        <div class="lib-card" style="background:#fafafa;">
+          <div class="lib-card-num">DESIGN NOTE</div>
+          <div class="lib-card-title">The Branching Input</div>
+          <div class="lib-card-desc">
+            A single &lt;input type="text"&gt; carries full narrative weight.
+            The simplest HTML element becomes a decision architecture.
+            The system only accepts two values; everything else is an anomaly.
+            The input field is not neutral — it is a gate.
+          </div>
+          <div style="font-size:10px; font-family:var(--font-mono);
+                      color:#888; margin-top:10px; line-height:1.7;
+                      letter-spacing:0.05em;">
+            Accepts: "red" → red.html<br/>
+            Accepts: "blue" → blue.html<br/>
+            Rejects: all other values
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ================================================================
+         SECTION 2 — BLUE PILL
+         ================================================================ -->
+    <div class="lib-section" id="sec-blue">
+      <div class="lib-section-title">§2 — Blue Pill Inputs (12 instances)</div>
+      <div class="lib-section-desc">
+        A structured identity-control dashboard. The system confirms who you are.
+        All choices are pre-determined. Inputs enforce, not liberate.
+      </div>
+
+      <div class="lib-grid">
+
+        <!-- 02 -->
+        <div class="lib-card">
+          <div class="lib-card-num">INSTANCE 02 / 25</div>
+          <span class="lib-type-badge blue-badge">type="text"</span>
+          <div class="lib-card-title">Name Confirmation</div>
+          <div class="lib-card-desc">
+            Identity is fixed and officially recognized. Submission triggers
+            a system confirmation: "IDENTITY CONFIRMED." The input performs
+            recognition, not creation.
+          </div>
+          <label for="lib-b1">Confirm your name</label>
+          <input type="text" id="lib-b1" placeholder="Enter name..." autocomplete="off" />
+        </div>
+
+        <!-- 03 -->
+        <div class="lib-card">
+          <div class="lib-card-num">INSTANCE 03 / 25</div>
+          <span class="lib-type-badge blue-badge">type="hidden"</span>
+          <div class="lib-card-title">Hidden Recording</div>
+          <div class="lib-card-desc">
+            The only input that does not solicit user action — it already has
+            a value. Exists invisibly in the DOM. Represents passive data
+            collection. "EVERYTHING IS BEING RECORDED" is the only visible
+            acknowledgment.
+          </div>
+          <input type="hidden" value="recording=true" />
+          <div style="border:1px solid #ccc; padding:8px;
+                      font-family:var(--font-mono); font-size:10px;
+                      color:#999; line-height:1.7;">
+            &lt;input type="hidden" value="recording=true" /&gt;<br/>
+            <span style="color:#cc0000;">● Everything is being recorded.</span>
+          </div>
+        </div>
+
+        <!-- 04 -->
+        <div class="lib-card">
+          <div class="lib-card-num">INSTANCE 04 / 25</div>
+          <span class="lib-type-badge blue-badge">type="checkbox"</span>
+          <div class="lib-card-title">Role in Society</div>
+          <div class="lib-card-desc">
+            Predefined categories only. The "Other" field is disabled.
+            There is no freedom to define yourself outside the system.
+            Checkboxes create the illusion of choice within an enclosed taxonomy.
+          </div>
+          <label>Confirm your role</label>
+          <div class="lib-check-row"><input type="checkbox" /> Student</div>
+          <div class="lib-check-row"><input type="checkbox" /> Worker</div>
+          <div class="lib-check-row"><input type="checkbox" /> Citizen</div>
+          <div class="lib-check-row"><input type="checkbox" disabled /> Other [DISABLED]</div>
+        </div>
+
+        <!-- 05 -->
+        <div class="lib-card">
+          <div class="lib-card-num">INSTANCE 05 / 25</div>
+          <span class="lib-type-badge blue-badge">type="range"</span>
+          <div class="lib-card-title">Daily Productivity</div>
+          <div class="lib-card-desc">
+            Quantifies human output as a scalar value. The slider reduces
+            experience to a number. After interaction: "PRODUCTIVITY RECORDED."
+            Personal effort becomes institutional data.
+          </div>
+          <label for="lib-b4">Rate today's productivity</label>
+          <input type="range" id="lib-b4" min="0" max="100" value="50" />
+          <div style="font-size:10px; font-family:var(--font-mono); color:#888;">
+            0 — 100
+          </div>
+        </div>
+
+        <!-- 06 -->
+        <div class="lib-card">
+          <div class="lib-card-num">INSTANCE 06 / 25</div>
+          <span class="lib-type-badge blue-badge">type="radio"</span>
+          <div class="lib-card-title">Emotion Status</div>
+          <div class="lib-card-desc">
+            Only acceptable emotions are listed. Sad, angry, hopeless — absent.
+            The radio group enforces affective compliance. Even inner life has
+            a controlled vocabulary.
+          </div>
+          <label>Select emotional status</label>
+          <div class="lib-radio-row"><input type="radio" name="lib-em" /> Happy</div>
+          <div class="lib-radio-row"><input type="radio" name="lib-em" /> Neutral</div>
+          <div class="lib-radio-row"><input type="radio" name="lib-em" /> Stressed</div>
+        </div>
+
+        <!-- 07 -->
+        <div class="lib-card">
+          <div class="lib-card-num">INSTANCE 07 / 25</div>
+          <span class="lib-type-badge blue-badge">type="color"</span>
+          <div class="lib-card-title">Sky Color</div>
+          <div class="lib-card-desc">
+            The user selects from a full spectrum, but the system appropriates
+            the choice: "SYSTEM COLOR APPLIED." Personal perception is absorbed
+            as a parameter. Perception becomes property.
+          </div>
+          <label for="lib-b6">Color of today's sky</label>
+          <input type="color" id="lib-b6" value="#87ceeb" />
+        </div>
+
+        <!-- 08 -->
+        <div class="lib-card">
+          <div class="lib-card-num">INSTANCE 08 / 25</div>
+          <span class="lib-type-badge blue-badge">type="time"</span>
+          <div class="lib-card-title">Wake Time</div>
+          <div class="lib-card-desc">
+            After input, the system corrects: "YOU SHOULD WAKE UP AT 06:00."
+            The user's routine is measured, then overwritten by an optimal
+            schedule. Time is normalized into compliance.
+          </div>
+          <label for="lib-b7">What time do you wake up?</label>
+          <input type="time" id="lib-b7" value="07:00" />
+        </div>
+
+        <!-- 09 -->
+        <div class="lib-card">
+          <div class="lib-card-num">INSTANCE 09 / 25</div>
+          <span class="lib-type-badge blue-badge">type="email"</span>
+          <div class="lib-card-title">Email Identity</div>
+          <div class="lib-card-desc">
+            Identity collapses into an account string. The email format enforces
+            a particular structure: user@domain. Selfhood is validated by the
+            presence of an @ symbol. You are your address.
+          </div>
+          <label for="lib-b8">Confirm your email identity</label>
+          <input type="email" id="lib-b8" placeholder="you@system.net" />
+        </div>
+
+        <!-- 10 -->
+        <div class="lib-card">
+          <div class="lib-card-num">INSTANCE 10 / 25</div>
+          <span class="lib-type-badge blue-badge">type="tel"</span>
+          <div class="lib-card-title">Support Line</div>
+          <div class="lib-card-desc">
+            A preset institutional phone number. Help is pre-formatted,
+            scheduled, and routed through official channels. The number
+            is already there. You didn't choose it.
+          </div>
+          <label for="lib-b9">When you need help, call</label>
+          <input type="tel" id="lib-b9" value="0800-SYS-HELP" />
+        </div>
+
+        <!-- 11 -->
+        <div class="lib-card">
+          <div class="lib-card-num">INSTANCE 11 / 25</div>
+          <span class="lib-type-badge blue-badge">type="radio"</span>
+          <div class="lib-card-title">Satisfaction Test</div>
+          <div class="lib-card-desc">
+            Two options: "Yes" and "Yes, completely." No negative option exists.
+            Dissatisfaction is structurally excluded. The survey is a performance
+            of contentment, not a measurement of it.
+          </div>
+          <label>Are you satisfied with your life?</label>
+          <div class="lib-radio-row"><input type="radio" name="lib-sat" /> Yes</div>
+          <div class="lib-radio-row"><input type="radio" name="lib-sat" /> Yes, completely</div>
+        </div>
+
+        <!-- 12 -->
+        <div class="lib-card">
+          <div class="lib-card-num">INSTANCE 12 / 25</div>
+          <span class="lib-type-badge blue-badge">type="checkbox"</span>
+          <div class="lib-card-title">Do You Need Help?</div>
+          <div class="lib-card-desc">
+            Checking the box triggers a glitch warning: "ANOMALY DETECTED."
+            The system is threatened by the admission of need. Help-seeking
+            destabilizes the supposedly stable interface.
+          </div>
+          <label>Do you need help?</label>
+          <div class="lib-check-row"><input type="checkbox" /> I need help</div>
+        </div>
+
+        <!-- 13 -->
+        <div class="lib-card">
+          <div class="lib-card-num">INSTANCE 13 / 25</div>
+          <span class="lib-type-badge blue-badge">type="reset"</span>
+          <div class="lib-card-title">System Reset</div>
+          <div class="lib-card-desc">
+            Resets the form and returns the user to the beginning. The system
+            allows repetition — not escape. Clicking reset does not free you;
+            it restarts the loop. The only valid action is to begin again.
+          </div>
+          <label>Do you want to reset?</label>
+          <input type="reset" value="RESET — RETURN TO BEGINNING" />
+        </div>
+
+      </div><!-- /.lib-grid -->
+    </div>
+
+    <!-- ================================================================
+         SECTION 3 — RED PILL
+         ================================================================ -->
+    <div class="lib-section" id="sec-red">
+      <div class="lib-section-title">§3 — Red Pill Inputs (12 instances)</div>
+      <div class="lib-section-desc">
+        A network of dissolving inputs. Identity is data. Data is unreliable.
+        The system breaks every category it appears to offer.
+        Each input destabilizes rather than confirms.
+      </div>
+
+      <div class="lib-grid">
+
+        <!-- 14 -->
+        <div class="lib-card">
+          <div class="lib-card-num">INSTANCE 14 / 25</div>
+          <span class="lib-type-badge red-badge">type="text"</span>
+          <div class="lib-card-title">Name</div>
+          <div class="lib-card-desc">
+            The entered name is converted into ASCII codes and scattered
+            into the network. Identity becomes a data signature. The name
+            remains, but as code — not selfhood.
+          </div>
+          <label for="lib-r1">Enter your name</label>
+          <input type="text" id="lib-r1" placeholder="name..." autocomplete="off"
+                 style="border:1px solid #00aa2a; background:#000;
+                        color:#00ff41; font-family:var(--font-mono);" />
+        </div>
+
+        <!-- 15 -->
+        <div class="lib-card">
+          <div class="lib-card-num">INSTANCE 15 / 25</div>
+          <span class="lib-type-badge red-badge">type="password"</span>
+          <div class="lib-card-title">Password / Memory</div>
+          <div class="lib-card-desc">
+            A memory entered as a password. The hidden field is exposed
+            on blur. The memory is declared unverified: "MEMORY UNVERIFIED."
+            What should be private is disclosed. What should be real is denied.
+          </div>
+          <label for="lib-r2">Enter a memory you believe is real</label>
+          <input type="password" id="lib-r2" placeholder="memory..."
+                 style="border:1px solid #00aa2a; background:#000;
+                        color:#00ff41; font-family:var(--font-mono); width:100%;" />
+        </div>
+
+        <!-- 16 -->
+        <div class="lib-card">
+          <div class="lib-card-num">INSTANCE 16 / 25</div>
+          <span class="lib-type-badge red-badge">type="radio"</span>
+          <div class="lib-card-title">Identity Selection</div>
+          <div class="lib-card-desc">
+            Offers: human, citizen, user, data. No matter which is chosen,
+            the system overrides the selection. Identity choice is structurally
+            false. You cannot select what you are.
+          </div>
+          <label>Choose who you are</label>
+          <div class="lib-radio-row"><input type="radio" name="lib-rid" /> human</div>
+          <div class="lib-radio-row"><input type="radio" name="lib-rid" /> citizen</div>
+          <div class="lib-radio-row"><input type="radio" name="lib-rid" /> user</div>
+          <div class="lib-radio-row"><input type="radio" name="lib-rid" /> data</div>
+        </div>
+
+        <!-- 17 -->
+        <div class="lib-card">
+          <div class="lib-card-num">INSTANCE 17 / 25</div>
+          <span class="lib-type-badge red-badge">type="number"</span>
+          <div class="lib-card-title">Age / Number Glitch</div>
+          <div class="lib-card-desc">
+            The entered age is distorted, duplicated, and converted to
+            binary-like strings. Even the most objective datum — how long you
+            have existed — cannot be trusted.
+          </div>
+          <label for="lib-r4">Enter your age</label>
+          <input type="number" id="lib-r4" placeholder="age..." min="0" max="999"
+                 style="border:1px solid #00aa2a; background:#000;
+                        color:#00ff41; font-family:var(--font-mono); width:100%;" />
+        </div>
+
+        <!-- 18 -->
+        <div class="lib-card">
+          <div class="lib-card-num">INSTANCE 18 / 25</div>
+          <span class="lib-type-badge red-badge">type="checkbox"</span>
+          <div class="lib-card-title">Freedom Check</div>
+          <div class="lib-card-desc">
+            Checking "I AM FREE" triggers: "STATEMENT INVALID." Freedom
+            cannot be confirmed inside the system. The act of asserting freedom
+            is itself evidence of its absence. The checkbox is a trap.
+          </div>
+          <label>Are you free?</label>
+          <div class="lib-check-row"><input type="checkbox" /> I AM FREE</div>
+        </div>
+
+        <!-- 19 -->
+        <div class="lib-card">
+          <div class="lib-card-num">INSTANCE 19 / 25</div>
+          <span class="lib-type-badge red-badge">type="search"</span>
+          <div class="lib-card-title">Search Your World</div>
+          <div class="lib-card-desc">
+            Returns only fragments of disaster and collapse: "GLOBAL SYSTEM
+            FAILURE REPORTED," "SIMULATION COLLAPSE DETECTED," etc. Truth
+            appears only in headlines. Full articles do not exist.
+          </div>
+          <label for="lib-r6">Search your world</label>
+          <input type="search" id="lib-r6" placeholder="query..."
+                 style="border:1px solid #00aa2a; background:#000;
+                        color:#00ff41; font-family:var(--font-mono); width:100%;" />
+        </div>
+
+        <!-- 20 -->
+        <div class="lib-card">
+          <div class="lib-card-num">INSTANCE 20 / 25</div>
+          <span class="lib-type-badge red-badge">type="file"</span>
+          <div class="lib-card-title">Upload Your Memory</div>
+          <div class="lib-card-desc">
+            After upload: "MEMORY FILE EMPTY" / "YOU NEVER EXISTED." No file
+            constitutes a stable archive of personal history. The upload
+            confirms absence. There is no document that proves you were here.
+          </div>
+          <label for="lib-r7">Upload your memory</label>
+          <input type="file" id="lib-r7" />
+        </div>
+
+        <!-- 21 -->
+        <div class="lib-card">
+          <div class="lib-card-num">INSTANCE 21 / 25</div>
+          <span class="lib-type-badge red-badge">type="date"</span>
+          <div class="lib-card-title">Date of Birth</div>
+          <div class="lib-card-desc">
+            After selecting a birth date: "YOU WERE NEVER BORN." Existence
+            is denied at the point of its most official confirmation.
+            The birth date, proof of origin, is declared null.
+          </div>
+          <label for="lib-r8">When were you born?</label>
+          <input type="date" id="lib-r8"
+                 style="border:1px solid #00aa2a; background:#000;
+                        color:#00ff41; font-family:var(--font-mono); width:100%;" />
+        </div>
+
+        <!-- 22 -->
+        <div class="lib-card">
+          <div class="lib-card-num">INSTANCE 22 / 25</div>
+          <span class="lib-type-badge red-badge">type="range"</span>
+          <div class="lib-card-title">Baseline Stability Test</div>
+          <div class="lib-card-desc">
+            Moving the slider causes the screen and network to shake, glitch,
+            and distort. Testing your own "normal" destabilizes reality.
+            Measurement produces interference.
+          </div>
+          <label for="lib-r9">Baseline stability test</label>
+          <input type="range" id="lib-r9" min="0" max="100" value="50"
+                 style="accent-color:#00ff41; width:100%;" />
+        </div>
+
+        <!-- 23 -->
+        <div class="lib-card">
+          <div class="lib-card-num">INSTANCE 23 / 25</div>
+          <span class="lib-type-badge red-badge">type="radio"</span>
+          <div class="lib-card-title">Escape Attempt</div>
+          <div class="lib-card-desc">
+            Selecting "Yes" causes the option to evade the cursor up to
+            3 times. After the third attempt: "ESCAPE ATTEMPT DETECTED /
+            ACCESS GRANTED." The network collapses. The gesture of escape
+            triggers the collapse itself.
+          </div>
+          <label>Do you want to escape the system?</label>
+          <div class="lib-radio-row"><input type="radio" name="lib-esc" /> yes</div>
+          <div class="lib-radio-row"><input type="radio" name="lib-esc" /> no</div>
+        </div>
+
+        <!-- 24 -->
+        <div class="lib-card">
+          <div class="lib-card-num">INSTANCE 24 / 25</div>
+          <span class="lib-type-badge red-badge">type="text"</span>
+          <div class="lib-card-title">Final Truth Arrival</div>
+          <div class="lib-card-desc">
+            An open text field after all other inputs have been destabilized.
+            Whatever is typed becomes the user's statement at the edge of the
+            simulation. Input leads into the collapse and white scene.
+          </div>
+          <label for="lib-r11">What do you know now?</label>
+          <input type="text" id="lib-r11" placeholder="nothing is real..."
+                 style="border:1px solid #00aa2a; background:#000;
+                        color:#00ff41; font-family:var(--font-mono); width:100%;" />
+        </div>
+
+        <!-- 25 -->
+        <div class="lib-card">
+          <div class="lib-card-num">INSTANCE 25 / 25</div>
+          <span class="lib-type-badge red-badge">type="button"</span>
+          <div class="lib-card-title">Final Question</div>
+          <div class="lib-card-desc">
+            On white: "Reality is irrational. Meaning is uncertain. Knowing
+            the absurdity of the world, will you continue to live?" One answer:
+            YES. Pressing it returns to index.html. The loop begins again.
+          </div>
+          <label>Will you continue to live?</label>
+          <input type="button" value="YES"
+                 style="border:1px solid #000; background:#000; color:#fff;
+                        font-family:var(--font-mono); font-size:11px;
+                        padding:6px 20px; cursor:pointer; letter-spacing:0.2em;" />
+        </div>
+
+      </div><!-- /.lib-grid -->
+    </div>
+
+    <!-- Footer -->
+    <div class="lib-footer">
+      <span>INPUT — AN HTML &lt;input&gt; ELEMENT STUDY — 25 INSTANCES</span>
+      <span>
+        <a href="index.html">index.html</a> &nbsp;|&nbsp;
+        <a href="blue.html">blue.html</a>  &nbsp;|&nbsp;
+        <a href="red.html">red.html</a>
+      </span>
+    </div>
+
+  </div><!-- /#library-page -->
+
+  <script src="library.js"></script>
+</body>
+</html>

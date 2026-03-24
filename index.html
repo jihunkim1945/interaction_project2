@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>INPUT — An HTML Experiment</title>
+  <link rel="stylesheet" href="global.css" />
+  <link rel="stylesheet" href="intro.css" />
+</head>
+<body>
+  <div id="intro-page">
+
+    <!--
+      SEQUENCE
+      1. #stage-crash    — car crash, canvas frame-by-frame, plays ONCE (1900ms)
+      2. #stage-the-end  — "The End" VHS GIF (2800ms)
+      3. #stage-ascii    — ASCII human glitch GIF (3200ms)
+      4. #stage-data     — data / number glitch GIF (2600ms)
+      5. #stage-pill     — Matrix pill full-bleed + input
+    -->
+
+    <!-- STAGE 1: Car crash — canvas renders frames, plays once -->
+    <div class="stage active" id="stage-crash">
+      <canvas id="crash-canvas"></canvas>
+    </div>
+
+    <!-- STAGE 2: The End VHS -->
+    <div class="stage" id="stage-the-end">
+      <img class="stage-gif" src="./the-end.gif" alt="" />
+    </div>
+
+    <!-- STAGE 3: ASCII human glitch -->
+    <div class="stage stage--dark" id="stage-ascii">
+      <img class="stage-gif stage-gif--contain" src="./ascii-human.gif" alt="" />
+    </div>
+
+    <!-- STAGE 4: Data / number glitch -->
+    <div class="stage" id="stage-data">
+      <img class="stage-gif" src="./data-glitch.gif" alt="" />
+    </div>
+
+    <!-- STAGE 5: Pill choice — full bleed + input overlay -->
+    <div class="stage stage--dark" id="stage-pill">
+      <img id="pill-image" src="./pill-choice.jpg" alt="Red pill and blue pill" />
+
+      <div id="pill-inner">
+        <div id="pill-input-wrap">
+          <div class="intro-label">MAKE YOUR SELECTION</div>
+
+          <!-- INPUT INSTANCE 01 / 25 -->
+          <input
+            type="text"
+            id="pill-input"
+            placeholder="TYPE RED OR BLUE"
+            maxlength="4"
+            autocomplete="off"
+            spellcheck="false"
+            aria-label="Choose pill: type red or blue"
+          />
+
+          <div id="pill-warning">⚠ INVALID SELECTION — SYSTEM CANNOT PROCESS</div>
+          <div class="intro-hint">PRESS ENTER TO CONFIRM</div>
+        </div>
+
+        <div class="intro-hint lib-link">
+          [ INPUT INSTANCE 01 / 25 ]
+          &nbsp;|&nbsp;
+          <a href="library.html">COMPONENT LIBRARY</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flash overlay between stages -->
+    <div id="flash-overlay"></div>
+
+  </div>
+
+  <script src="intro.js"></script>
+</body>
+</html>

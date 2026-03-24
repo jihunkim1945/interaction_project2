@@ -1,0 +1,304 @@
+/* ============================================
+   css/blue.css — Blue Pill page styles
+   ============================================ */
+
+/* ── Page shell ── */
+#blue-page {
+  background: var(--blue-bg);
+  min-height: 100vh;
+  font-family: var(--font-system);
+  color: var(--gray-800);
+  padding: 60px 20px 60px;
+}
+
+/* ── Header bar ── */
+.blue-header {
+  max-width: 1100px;
+  margin: 0 auto 28px;
+  border-bottom: 2px solid var(--blue-border);
+  padding-bottom: 14px;
+  display: flex;
+  align-items: baseline;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.blue-header h1 {
+  font-family: var(--font-brutal);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--black);
+}
+
+.blue-header .header-sub {
+  font-size: 10px;
+  color: #888;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+/* ── System status bar ── */
+.blue-system-bar {
+  max-width: 1100px;
+  margin: 0 auto 20px;
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  padding: 6px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ── Dashboard grid ── */
+.blue-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+}
+
+@media (max-width: 860px) {
+  .blue-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .blue-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Panel card ── */
+.blue-panel {
+  background: var(--blue-panel);
+  border: 1px solid var(--blue-border);
+  padding: 20px;
+  position: relative;
+}
+
+.blue-panel-label {
+  font-size: 9px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #999;
+  margin-bottom: 4px;
+}
+
+.blue-panel-num {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  font-size: 9px;
+  font-family: var(--font-mono);
+  color: var(--blue-border);
+  letter-spacing: 0.1em;
+}
+
+.blue-panel h2 {
+  font-family: var(--font-brutal);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--black);
+  margin-bottom: 12px;
+}
+
+.blue-panel label {
+  display: block;
+  font-size: 11px;
+  color: #555;
+  margin-bottom: 8px;
+  letter-spacing: 0.04em;
+}
+
+/* ── Text-like inputs ── */
+.blue-input-text,
+.blue-input-email,
+.blue-input-tel,
+.blue-input-time {
+  width: 100%;
+  border: 1px solid var(--blue-border);
+  background: var(--white);
+  padding: 7px 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--black);
+  outline: none;
+  border-radius: 0;
+  transition: border-color 0.15s;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.blue-input-text:focus,
+.blue-input-email:focus,
+.blue-input-tel:focus,
+.blue-input-time:focus {
+  border-color: var(--blue-primary);
+}
+
+/* ── Status line ── */
+.blue-status {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--blue-primary);
+  margin-top: 8px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  min-height: 16px;
+}
+
+.blue-status.show {
+  opacity: 1;
+}
+
+/* ── Checkbox group ── */
+.blue-checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #333;
+  margin-bottom: 6px;
+  cursor: pointer;
+}
+
+.blue-checkbox-group input[type="checkbox"] {
+  accent-color: var(--blue-primary);
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* Disabled "other" field */
+.blue-disabled-field {
+  border: 1px solid var(--blue-border);
+  background: #e0e0e0;
+  padding: 6px 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #999;
+  margin-top: 8px;
+  cursor: not-allowed;
+  user-select: none;
+}
+
+/* ── Range ── */
+.blue-range {
+  width: 100%;
+  margin: 8px 0;
+  accent-color: var(--blue-primary);
+  cursor: pointer;
+}
+
+.blue-range-val {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #555;
+}
+
+/* ── Radio group ── */
+.blue-radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #333;
+  margin-bottom: 6px;
+  cursor: pointer;
+}
+
+.blue-radio-group input[type="radio"] {
+  accent-color: var(--blue-primary);
+  cursor: pointer;
+}
+
+/* ── Color picker ── */
+input[type="color"].blue-color {
+  border: 1px solid var(--blue-border);
+  padding: 2px;
+  width: 50px;
+  height: 30px;
+  cursor: pointer;
+  background: var(--white);
+  border-radius: 0;
+}
+
+.color-swatch {
+  width: 40px;
+  height: 20px;
+  display: inline-block;
+  border: 1px solid var(--blue-border);
+  vertical-align: middle;
+  transition: background 0.2s;
+}
+
+/* ── Recording notice ── */
+.recording-notice {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: #aa0000;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+/* ── Reset button ── */
+.blue-btn-reset {
+  width: 100%;
+  padding: 10px;
+  background: var(--black);
+  color: var(--white);
+  border: none;
+  font-family: var(--font-brutal);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-top: 8px;
+}
+
+.blue-btn-reset:hover {
+  background: #333;
+}
+
+/* ── Help glitch warning overlay ── */
+.blue-glitch-warn {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--black);
+  color: #ff0000;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 20px 32px;
+  border: 2px solid #ff0000;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  text-align: center;
+  line-height: 1.8;
+}
+
+.blue-glitch-warn.show {
+  opacity: 1;
+}

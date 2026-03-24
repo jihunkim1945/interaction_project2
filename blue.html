@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BLUE PILL — Identity Confirmation System</title>
+  <link rel="stylesheet" href="global.css" />
+  <link rel="stylesheet" href="blue.css" />
+</head>
+<body>
+  <div id="blue-page">
+
+    <a href="index.html" class="nav-back blue">← RETURN</a>
+
+    <!-- INPUT INSTANCE 03 / 25 — hidden recording field -->
+    <input type="hidden" id="hidden-record" value="recording=true" />
+
+    <!-- Header -->
+    <div class="blue-header">
+      <h1>Identity Confirmation System</h1>
+      <span class="header-sub">BLUE PILL INTERFACE — SESSION ACTIVE</span>
+    </div>
+
+    <!-- System status bar -->
+    <div class="blue-system-bar">
+      <span>SYS/IDENTITY/v4.1 — USER SESSION INITIALIZED</span>
+      <span id="blue-clock">00:00:00</span>
+    </div>
+
+    <!-- Dashboard grid — 12 panels -->
+    <div class="blue-grid">
+
+      <!-- ── PANEL 01: Name Confirmation ── -->
+      <div class="blue-panel">
+        <div class="blue-panel-label">INPUT 02 / 25</div>
+        <div class="blue-panel-num">#01</div>
+        <h2>Name Confirmation</h2>
+        <label for="blue-name">Confirm your name</label>
+        <!-- INPUT INSTANCE 02 / 25 -->
+        <input
+          type="text"
+          id="blue-name"
+          class="blue-input-text"
+          placeholder="Enter name..."
+          autocomplete="off"
+        />
+        <div class="blue-status" id="blue-name-status">IDENTITY CONFIRMED</div>
+      </div>
+
+      <!-- ── PANEL 02: Hidden Recording (visual card) ── -->
+      <div class="blue-panel" style="background:#fafafa;">
+        <div class="blue-panel-label">INPUT 03 / 25</div>
+        <div class="blue-panel-num">#02</div>
+        <h2>System Monitor</h2>
+        <div class="recording-notice">● EVERYTHING IS BEING RECORDED.</div>
+        <div class="recording-notice" style="color:#888;">Data retention: indefinite</div>
+        <div class="recording-notice">RECORD STATUS: ACTIVE</div>
+        <div style="margin-top:12px; font-size:9px; color:#bbb;
+                    font-family:var(--font-mono); letter-spacing:0.1em; line-height:1.6;">
+          A hidden input field is present in this document.<br/>
+          Your session data is being logged.
+        </div>
+      </div>
+
+      <!-- ── PANEL 03: Role in Society ── -->
+      <div class="blue-panel">
+        <div class="blue-panel-label">INPUT 04 / 25</div>
+        <div class="blue-panel-num">#03</div>
+        <h2>Role in Society</h2>
+        <label>Confirm your role in society</label>
+        <!-- INPUT INSTANCE 04 / 25 — checkboxes -->
+        <div class="blue-checkbox-group">
+          <label><input type="checkbox" class="blue-checkbox" value="student"  /> Student</label>
+          <label><input type="checkbox" class="blue-checkbox" value="worker"   /> Worker</label>
+          <label><input type="checkbox" class="blue-checkbox" value="citizen"  /> Citizen</label>
+          <label><input type="checkbox" class="blue-checkbox" value="consumer" /> Consumer</label>
+        </div>
+        <div class="blue-disabled-field" aria-disabled="true">Other: [FIELD DISABLED]</div>
+        <div class="blue-status show" style="opacity:0.4;">ROLE CATEGORIES ARE FINAL</div>
+      </div>
+
+      <!-- ── PANEL 04: Daily Productivity ── -->
+      <div class="blue-panel">
+        <div class="blue-panel-label">INPUT 05 / 25</div>
+        <div class="blue-panel-num">#04</div>
+        <h2>Daily Productivity</h2>
+        <label for="blue-range">Rate today's productivity</label>
+        <!-- INPUT INSTANCE 05 / 25 -->
+        <input
+          type="range"
+          id="blue-range"
+          class="blue-range"
+          min="0" max="100" value="50"
+        />
+        <div class="blue-range-val">Value: <span id="blue-range-val">50</span> / 100</div>
+        <div class="blue-status" id="blue-range-status">PRODUCTIVITY RECORDED</div>
+      </div>
+
+      <!-- ── PANEL 05: Emotion Status ── -->
+      <div class="blue-panel">
+        <div class="blue-panel-label">INPUT 06 / 25</div>
+        <div class="blue-panel-num">#05</div>
+        <h2>Emotion Status</h2>
+        <label>Select your emotional status</label>
+        <!-- INPUT INSTANCE 06 / 25 — radio -->
+        <div class="blue-radio-group">
+          <label><input type="radio" name="emotion" value="happy"   /> Happy</label>
+          <label><input type="radio" name="emotion" value="neutral" /> Neutral</label>
+          <label><input type="radio" name="emotion" value="stressed"/> Stressed</label>
+        </div>
+        <div class="blue-status show" style="opacity:0.38; margin-top:4px;">
+          SAD / ANGRY / HOPELESS — NOT VALID STATES
+        </div>
+      </div>
+
+      <!-- ── PANEL 06: Sky Color ── -->
+      <div class="blue-panel">
+        <div class="blue-panel-label">INPUT 07 / 25</div>
+        <div class="blue-panel-num">#06</div>
+        <h2>Sky Color</h2>
+        <label for="blue-color">Choose the color of today's sky</label>
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+          <!-- INPUT INSTANCE 07 / 25 -->
+          <input type="color" id="blue-color" class="blue-color" value="#87ceeb" />
+          <div class="color-swatch" id="color-swatch" style="background:#87ceeb;"></div>
+          <span id="color-val"
+                style="font-family:var(--font-mono); font-size:10px; color:#888;">#87CEEB</span>
+        </div>
+        <div class="blue-status" id="blue-color-status">SYSTEM COLOR APPLIED</div>
+      </div>
+
+      <!-- ── PANEL 07: Wake Time ── -->
+      <div class="blue-panel">
+        <div class="blue-panel-label">INPUT 08 / 25</div>
+        <div class="blue-panel-num">#07</div>
+        <h2>Wake Time</h2>
+        <label for="blue-time">What time do you wake up?</label>
+        <!-- INPUT INSTANCE 08 / 25 -->
+        <input
+          type="time"
+          id="blue-time"
+          class="blue-input-time"
+          value="07:00"
+        />
+        <div class="blue-status" id="blue-time-status" style="color:#aa0000;">
+          YOU SHOULD WAKE UP AT 06:00
+        </div>
+      </div>
+
+      <!-- ── PANEL 08: Email Identity ── -->
+      <div class="blue-panel">
+        <div class="blue-panel-label">INPUT 09 / 25</div>
+        <div class="blue-panel-num">#08</div>
+        <h2>Email Identity</h2>
+        <label for="blue-email">Confirm your email identity</label>
+        <!-- INPUT INSTANCE 09 / 25 -->
+        <input
+          type="email"
+          id="blue-email"
+          class="blue-input-email"
+          placeholder="you@system.net"
+        />
+        <div class="blue-status" id="blue-email-status">ACCOUNT IDENTITY CONFIRMED</div>
+        <div style="font-size:9px; color:#aaa; font-family:var(--font-mono);
+                    margin-top:6px; letter-spacing:0.1em;">
+          YOU ARE YOUR ACCOUNT
+        </div>
+      </div>
+
+      <!-- ── PANEL 09: Support Line ── -->
+      <div class="blue-panel">
+        <div class="blue-panel-label">INPUT 10 / 25</div>
+        <div class="blue-panel-num">#09</div>
+        <h2>Support Line</h2>
+        <label for="blue-tel">When you need help, call</label>
+        <!-- INPUT INSTANCE 10 / 25 -->
+        <input
+          type="tel"
+          id="blue-tel"
+          class="blue-input-tel"
+          value="0800-SYS-HELP"
+        />
+        <div style="font-size:9px; color:#aaa; font-family:var(--font-mono);
+                    margin-top:8px; letter-spacing:0.1em; line-height:1.6;">
+          INSTITUTIONAL SUPPORT AVAILABLE<br/>
+          MON–FRI 09:00–17:00
+        </div>
+      </div>
+
+      <!-- ── PANEL 10: Satisfaction Test ── -->
+      <div class="blue-panel">
+        <div class="blue-panel-label">INPUT 11 / 25</div>
+        <div class="blue-panel-num">#10</div>
+        <h2>Satisfaction Test</h2>
+        <label>Are you satisfied with your life?</label>
+        <!-- INPUT INSTANCE 11 / 25 — radio -->
+        <div class="blue-radio-group">
+          <label><input type="radio" name="satisfaction" value="yes"            /> Yes</label>
+          <label><input type="radio" name="satisfaction" value="yes-completely" /> Yes, completely</label>
+        </div>
+        <div class="blue-status show"
+             style="opacity:0.35; font-size:9px; margin-top:4px;">
+          ONLY AFFIRMATIVE RESPONSES ARE ACCEPTED
+        </div>
+      </div>
+
+      <!-- ── PANEL 11: Do You Need Help? ── -->
+      <div class="blue-panel">
+        <div class="blue-panel-label">INPUT 12 / 25</div>
+        <div class="blue-panel-num">#11</div>
+        <h2>Do You Need Help?</h2>
+        <!-- INPUT INSTANCE 12 / 25 — checkbox -->
+        <div class="blue-checkbox-group">
+          <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+            <input type="checkbox" id="blue-help" />
+            I need help
+          </label>
+        </div>
+        <div class="blue-status" id="blue-help-status" style="color:#cc0000;">
+          ⚠ ANOMALY DETECTED — PLEASE REMAIN CALM
+        </div>
+      </div>
+
+      <!-- ── PANEL 12: System Reset ── -->
+      <div class="blue-panel" style="background:#f8f8f8;">
+        <div class="blue-panel-label">INPUT 13 / 25</div>
+        <div class="blue-panel-num">#12</div>
+        <h2>System Reset</h2>
+        <label>Do you want to reset?</label>
+        <div style="font-size:10px; color:#888; font-family:var(--font-mono);
+                    margin-bottom:12px; line-height:1.5; letter-spacing:0.05em;">
+          Resetting does not change the system.<br/>
+          The loop continues.
+        </div>
+        <!-- INPUT INSTANCE 13 / 25 — reset (hidden; button below triggers it) -->
+        <input type="reset" id="blue-reset-hidden" style="display:none;" />
+        <button class="blue-btn-reset" id="blue-reset-btn">
+          RESET / RETURN TO BEGINNING
+        </button>
+      </div>
+
+    </div><!-- /.blue-grid -->
+
+    <!-- Glitch warning overlay (triggered by "Do you need help?") -->
+    <div class="blue-glitch-warn" id="blue-glitch-warn">
+      ⚠ SYSTEM INSTABILITY DETECTED<br/>
+      REQUESTING HELP IS NOT PERMITTED
+    </div>
+
+  </div><!-- /#blue-page -->
+
+  <script src="blue.js"></script>
+</body>
+</html>
