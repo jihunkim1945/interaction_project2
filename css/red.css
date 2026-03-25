@@ -288,3 +288,7 @@ body, html {
 
 .screen-shake   { animation: screenShake 0.4s ease; }
 .glitch-flicker { animation: glitchFlicker 0.3s ease 2; }
+[class*="spline"] ~ div,
+#red-page > div:last-of-type:not(#zoom-overlay):not(#white-scene) {
+  display: none !important;
+}
