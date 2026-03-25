@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Spline Inspector</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #000; color: #00ff41; font-family: 'Courier New', monospace; }
+
+    canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    #panel {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 100;
+      background: rgba(0,0,0,0.9);
+      border: 1px solid #00ff41;
+      padding: 16px;
+      width: 280px;
+      max-height: 80vh;
+      overflow-y: auto;
+      font-size: 11px;
+    }
+
+    #panel h2 {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #00ff41;
+      color: #fff;
+    }
+
+    #status { color: #ffff00; margin-bottom: 10px; }
+
+    .obj {
+      display: block;
+      padding: 4px 0;
+      color: #00ff41;
+      cursor: pointer;
+      border-bottom: 1px solid #003311;
+    }
+
+    .obj:hover { color: #fff; }
+    .obj.hidden { color: #ff3333; text-decoration: line-through; }
+
+    #hint {
+      margin-top: 10px;
+      color: rgba(255,255,255,0.3);
+      font-size: 10px;
+      line-height: 1.6;
+      border-top: 1px solid #003311;
+      padding-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="canvas3d"></canvas>
+
+<div id="panel">
+  <h2>SPLINE OBJECTS</h2>
+  <div id="status">Loading...</div>
+  <div id="list"></div>
+  <div id="hint">클릭하면 숨기기/보이기<br/>토끼 오브젝트 이름 확인용</div>
+</div>
+
+<script type="module">
+  import { Application } from 'https://unpkg.com/@splinetool/runtime@1.9.28/build/runtime.js';
+
+  const canvas = document.getElementById('canvas3d');
+  const status = document.getElementById('status');
+  const list   = document.getElementById('list');
+
+  const app = new Application(canvas);
+
+  app.load('https://prod.spline.design/5iDn8kJog7o5wvBI/scene.splinecode')
+    .then(() => {
+      status.textContent = '✓ 로드 완료';
+      status.style.color = '#00ff41';
+
+      const names = [];
+      app.scene.traverse(obj => {
+        if (obj.name) names.push({ name: obj.name, obj });
+      });
+
+      console.log('모든 오브젝트:', names.map(n => n.name));
+
+      names.forEach(({ name, obj }) => {
+        const el = document.createElement('span');
+        el.className = 'obj';
+        el.textContent = name;
+        el.addEventListener('click', () => {
+          obj.visible = !obj.visible;
+          el.classList.toggle('hidden', !obj.visible);
+        });
+        list.appendChild(el);
+      });
+
+      if (names.length === 0) {
+        list.textContent = '오브젝트 없음';
+      }
+    })
+    .catch(err => {
+      status.textContent = '✗ 실패: ' + err.message;
+      status.style.color = '#ff3333';
+    });
+</script>
+
+</body>
+</html>
