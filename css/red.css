@@ -1,54 +1,40 @@
 /* ============================================
-   css/red.css — Red Pill page styles
+   css/red.css — Red Pill page (Spline background)
    ============================================ */
 
-/* ── Page shell ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body, html {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+}
+
 #red-page {
   width: 100vw;
   height: 100vh;
-  background: var(--black);
+  background: #000;
   overflow: hidden;
   position: relative;
-  font-family: var(--font-mono);
+  font-family: 'Courier New', monospace;
 }
 
-/* ── Matrix rain layer ── */
-#matrix-rain {
-  position: absolute;
-  inset: 0;
+/* ── Spline canvas — full background ── */
+#spline-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100% !important;
+  height: 100% !important;
   z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
 }
 
-.rain-col {
-  position: absolute;
-  top: 0;
-  display: flex;
-  flex-direction: column;
-  font-family: var(--font-mono);
-  font-size: 14px;
-  line-height: 1.4;
-  color: var(--matrix-green-dim);
-  will-change: transform;
-  user-select: none;
-}
-
-/* ── SVG connector lines ── */
-#network-svg {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  width: 100%;
-  height: 100%;
-}
-
-/* ── Node container ── */
+/* ── Network container ── */
 #network-container {
   position: absolute;
   inset: 0;
   z-index: 2;
+  pointer-events: none;
 }
 
 /* ── Individual node ── */
@@ -56,32 +42,32 @@
   position: absolute;
   width: 200px;
   transform: translate(-50%, -50%);
+  pointer-events: auto;
   cursor: pointer;
   transition: filter 0.3s;
-  user-select: none;
 }
 
 .red-node:hover {
-  filter: drop-shadow(0 0 12px var(--matrix-green));
+  filter: drop-shadow(0 0 14px #00ff41);
   z-index: 10;
 }
 
 .node-shell {
-  border: 1px solid var(--matrix-green-dim);
-  background: rgba(0, 255, 65, 0.04);
+  border: 1px solid rgba(0, 255, 65, 0.4);
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
   padding: 10px 12px;
-  position: relative;
   transition: border-color 0.3s, background 0.3s;
 }
 
 .red-node:hover .node-shell {
-  border-color: var(--matrix-green);
-  background: rgba(0, 255, 65, 0.08);
+  border-color: #00ff41;
+  background: rgba(0, 0, 0, 0.8);
 }
 
 .node-id {
   font-size: 8px;
-  color: var(--matrix-green-dim);
+  color: rgba(0, 255, 65, 0.5);
   letter-spacing: 0.2em;
   margin-bottom: 4px;
   text-transform: uppercase;
@@ -89,21 +75,21 @@
 
 .node-label {
   font-size: 10px;
-  color: var(--matrix-green);
+  color: #00ff41;
   letter-spacing: 0.1em;
   margin-bottom: 8px;
   text-transform: uppercase;
   line-height: 1.3;
 }
 
-/* ── Shared red input reset ── */
+/* ── Inputs ── */
 .red-input {
   width: 100%;
   background: transparent;
   border: none;
-  border-bottom: 1px solid var(--matrix-green-dim);
-  color: var(--matrix-green);
-  font-family: var(--font-mono);
+  border-bottom: 1px solid rgba(0, 255, 65, 0.4);
+  color: #00ff41;
+  font-family: 'Courier New', monospace;
   font-size: 11px;
   padding: 4px 2px;
   outline: none;
@@ -111,19 +97,16 @@
   transition: border-color 0.3s;
 }
 
-.red-input:focus {
-  border-color: var(--matrix-green);
-}
+.red-input:focus { border-color: #00ff41; }
 
 .red-input::placeholder {
-  color: var(--matrix-green-dark);
+  color: rgba(0, 255, 65, 0.25);
   font-size: 10px;
 }
 
-/* Type-specific overrides */
 .red-input[type="range"] {
   border: none;
-  accent-color: var(--matrix-green);
+  accent-color: #00ff41;
   padding: 0;
   margin: 4px 0;
   cursor: pointer;
@@ -131,7 +114,7 @@
 
 .red-input[type="radio"],
 .red-input[type="checkbox"] {
-  accent-color: var(--matrix-green);
+  accent-color: #00ff41;
   border: none;
   padding: 0;
   cursor: pointer;
@@ -140,7 +123,7 @@
 
 .red-input[type="file"] {
   font-size: 9px;
-  color: var(--matrix-green-dim);
+  color: rgba(0, 255, 65, 0.5);
   border: none;
   cursor: pointer;
   padding: 0;
@@ -150,28 +133,28 @@
   color-scheme: dark;
 }
 
-.red-input[type="button"] {
-  border: 1px solid var(--matrix-green-dim);
+.red-input--btn {
+  border: 1px solid rgba(0, 255, 65, 0.4);
   padding: 6px;
   text-align: center;
   letter-spacing: 0.2em;
   cursor: pointer;
   transition: border-color 0.2s, background 0.2s;
+  margin-top: 4px;
 }
 
-.red-input[type="button"]:hover {
-  border-color: var(--matrix-green);
+.red-input--btn:hover {
+  border-color: #00ff41;
   background: rgba(0, 255, 65, 0.08);
 }
 
-/* ── Radio rows ── */
 .red-radio-row {
   display: flex;
   align-items: center;
   gap: 6px;
   margin-bottom: 4px;
   font-size: 10px;
-  color: var(--matrix-green);
+  color: #00ff41;
 }
 
 /* ── Node response text ── */
@@ -188,7 +171,7 @@
 }
 
 .node-response.show  { opacity: 1; }
-.node-response.green { color: var(--matrix-green); }
+.node-response.green { color: #00ff41; }
 
 /* ── Zoom overlay ── */
 #zoom-overlay {
@@ -198,17 +181,15 @@
   display: none;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.95);
+  background: rgba(0, 0, 0, 0.92);
   padding: 20px;
 }
 
-#zoom-overlay.active {
-  display: flex;
-}
+#zoom-overlay.active { display: flex; }
 
 #zoomed-node {
-  border: 1px solid var(--matrix-green);
-  background: rgba(0, 255, 65, 0.05);
+  border: 1px solid #00ff41;
+  background: rgba(0, 0, 0, 0.95);
   padding: 32px;
   max-width: 500px;
   width: 100%;
@@ -217,10 +198,9 @@
 
 .zoom-close {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  color: var(--matrix-green-dim);
-  font-family: var(--font-mono);
+  top: 12px; right: 12px;
+  color: rgba(0, 255, 65, 0.5);
+  font-family: 'Courier New', monospace;
   font-size: 10px;
   letter-spacing: 0.2em;
   cursor: pointer;
@@ -230,24 +210,21 @@
   transition: color 0.2s;
 }
 
-.zoom-close:hover { color: var(--matrix-green); }
+.zoom-close:hover { color: #00ff41; }
 
-#zoomed-node .node-id    { font-size: 10px; margin-bottom: 8px; }
 #zoomed-node .node-label { font-size: 14px; margin-bottom: 16px; }
 #zoomed-node .red-input  { font-size: 13px; padding: 8px 2px; }
 #zoomed-node .node-response { font-size: 11px; }
 
-/* ── Escape yes-row (evasion animation) ── */
-#escape-yes-row {
-  transition: transform 0.15s ease;
-}
+/* ── Escape yes-row evasion ── */
+#escape-yes-row { transition: transform 0.15s ease; }
 
 /* ── White collapse scene ── */
 #white-scene {
   position: fixed;
   inset: 0;
   z-index: 200;
-  background: var(--white);
+  background: #fff;
   display: none;
   flex-direction: column;
   align-items: center;
@@ -260,38 +237,54 @@
 #white-scene.active { display: flex; }
 
 .white-scene-title {
-  font-family: var(--font-mono);
+  font-family: 'Courier New', monospace;
   font-size: clamp(16px, 2.8vw, 24px);
-  color: var(--black);
+  color: #000;
   letter-spacing: 0.08em;
   line-height: 1.7;
-  max-width: 600px;
 }
 
 .white-scene-sub {
-  font-family: var(--font-mono);
+  font-family: 'Courier New', monospace;
   font-size: clamp(11px, 1.4vw, 13px);
   color: #555;
   letter-spacing: 0.12em;
   line-height: 2;
-  max-width: 520px;
 }
 
-/* YES button (input[type="button"] in white-scene) */
 #btn-yes {
-  font-family: var(--font-brutal);
+  font-family: 'Arial Black', Arial, sans-serif;
   font-size: 14px;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: var(--black);
+  color: #000;
   background: transparent;
-  border: 2px solid var(--black);
+  border: 2px solid #000;
   padding: 14px 48px;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
 }
 
 #btn-yes:hover {
-  background: var(--black);
-  color: var(--white);
+  background: #000;
+  color: #fff;
 }
+
+/* ── Screen shake / glitch ── */
+@keyframes screenShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px) rotate(-0.5deg); }
+  40% { transform: translateX(8px) rotate(0.5deg); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+
+@keyframes glitchFlicker {
+  0%, 100% { opacity: 1; }
+  25% { opacity: 0.7; filter: hue-rotate(90deg); }
+  50% { opacity: 1; }
+  75% { opacity: 0.85; filter: hue-rotate(-90deg); }
+}
+
+.screen-shake   { animation: screenShake 0.4s ease; }
+.glitch-flicker { animation: glitchFlicker 0.3s ease 2; }
