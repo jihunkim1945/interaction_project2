@@ -22,11 +22,8 @@ const app    = new Application(canvas);
 app.load('https://prod.spline.design/5iDn8kJog7o5wvBI/scene.splinecode')
   .then(() => {
     /* Hide the Bunny object */
-    app.scene.traverse(obj => {
-      if (obj.name === 'Bunny') {
-        obj.visible = false;
-      }
-    });
+   const bunny = app.findObjectByName('Bunny');
+if (bunny) bunny.visible = false;
   })
   .catch(err => console.warn('Spline load error:', err));
 
