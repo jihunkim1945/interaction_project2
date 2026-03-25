@@ -12,13 +12,10 @@
 
     <a href="index.html" class="nav-back green">← EXIT</a>
 
-    <!-- Matrix rain (populated by JS) -->
-    <div id="matrix-rain"></div>
+    <!-- Spline 3D background -->
+    <canvas id="spline-canvas"></canvas>
 
-    <!-- SVG connector lines (built by JS) -->
-    <svg id="network-svg" xmlns="http://www.w3.org/2000/svg"></svg>
-
-    <!-- ── Network nodes ── -->
+    <!-- Network nodes floating above Spline -->
     <div id="network-container">
 
       <!-- NODE 01: Name -->
@@ -26,157 +23,135 @@
         <div class="node-shell">
           <div class="node-id">NODE 14/25 — TYPE:TEXT</div>
           <div class="node-label">ENTER YOUR NAME</div>
-          <!-- INPUT INSTANCE 14 / 25 -->
-          <input type="text" class="red-input" id="r-name"
-                 placeholder="name..." autocomplete="off" />
+          <input type="text" class="red-input" id="r-name" placeholder="name..." autocomplete="off" />
           <div class="node-response" id="r-name-res"></div>
         </div>
       </div>
 
-      <!-- NODE 02: Memory / Password -->
+      <!-- NODE 02: Memory -->
       <div class="red-node" id="rnode-2">
         <div class="node-shell">
           <div class="node-id">NODE 15/25 — TYPE:PASSWORD</div>
           <div class="node-label">ENTER A MEMORY YOU BELIEVE IS REAL</div>
-          <!-- INPUT INSTANCE 15 / 25 -->
-          <input type="password" class="red-input" id="r-memory"
-                 placeholder="memory..." autocomplete="off" />
+          <input type="password" class="red-input" id="r-memory" placeholder="memory..." autocomplete="off" />
           <div class="node-response" id="r-memory-res"></div>
         </div>
       </div>
 
-      <!-- NODE 03: Identity Selection -->
+      <!-- NODE 03: Identity -->
       <div class="red-node" id="rnode-3">
         <div class="node-shell">
           <div class="node-id">NODE 16/25 — TYPE:RADIO</div>
           <div class="node-label">CHOOSE WHO YOU ARE</div>
-          <!-- INPUT INSTANCE 16 / 25 -->
-          <div class="red-radio-row"><input type="radio" class="red-input" name="r-identity" value="human"   /> human</div>
+          <div class="red-radio-row"><input type="radio" class="red-input" name="r-identity" value="human" /> human</div>
           <div class="red-radio-row"><input type="radio" class="red-input" name="r-identity" value="citizen" /> citizen</div>
-          <div class="red-radio-row"><input type="radio" class="red-input" name="r-identity" value="user"    /> user</div>
-          <div class="red-radio-row"><input type="radio" class="red-input" name="r-identity" value="data"    /> data</div>
+          <div class="red-radio-row"><input type="radio" class="red-input" name="r-identity" value="user" /> user</div>
+          <div class="red-radio-row"><input type="radio" class="red-input" name="r-identity" value="data" /> data</div>
           <div class="node-response" id="r-identity-res"></div>
         </div>
       </div>
 
-      <!-- NODE 04: Age / Number Glitch -->
+      <!-- NODE 04: Age -->
       <div class="red-node" id="rnode-4">
         <div class="node-shell">
           <div class="node-id">NODE 17/25 — TYPE:NUMBER</div>
           <div class="node-label">ENTER YOUR AGE</div>
-          <!-- INPUT INSTANCE 17 / 25 -->
-          <input type="number" class="red-input" id="r-age"
-                 placeholder="age..." min="0" max="999" />
+          <input type="number" class="red-input" id="r-age" placeholder="age..." min="0" max="999" />
           <div class="node-response" id="r-age-res"></div>
         </div>
       </div>
 
-      <!-- NODE 05: Freedom Check -->
+      <!-- NODE 05: Freedom -->
       <div class="red-node" id="rnode-5">
         <div class="node-shell">
           <div class="node-id">NODE 18/25 — TYPE:CHECKBOX</div>
           <div class="node-label">ARE YOU FREE?</div>
-          <!-- INPUT INSTANCE 18 / 25 -->
           <div class="red-radio-row" style="margin-top:4px;">
             <input type="checkbox" class="red-input" id="r-free" />
-            <span style="font-size:10px; color:var(--matrix-green); margin-left:6px;">
-              I AM FREE
-            </span>
+            <span style="font-size:10px;color:var(--matrix-green);margin-left:6px;">I AM FREE</span>
           </div>
           <div class="node-response" id="r-free-res"></div>
         </div>
       </div>
 
-      <!-- NODE 06: Search Your World -->
+      <!-- NODE 06: Search -->
       <div class="red-node" id="rnode-6">
         <div class="node-shell">
           <div class="node-id">NODE 19/25 — TYPE:SEARCH</div>
           <div class="node-label">SEARCH YOUR WORLD</div>
-          <!-- INPUT INSTANCE 19 / 25 -->
-          <input type="search" class="red-input" id="r-search"
-                 placeholder="query..." autocomplete="off" />
+          <input type="search" class="red-input" id="r-search" placeholder="query..." autocomplete="off" />
           <div class="node-response" id="r-search-res"></div>
         </div>
       </div>
 
-      <!-- NODE 07: Upload Memory -->
+      <!-- NODE 07: File -->
       <div class="red-node" id="rnode-7">
         <div class="node-shell">
           <div class="node-id">NODE 20/25 — TYPE:FILE</div>
           <div class="node-label">UPLOAD YOUR MEMORY</div>
-          <!-- INPUT INSTANCE 20 / 25 -->
           <input type="file" class="red-input" id="r-file" />
           <div class="node-response" id="r-file-res"></div>
         </div>
       </div>
 
-      <!-- NODE 08: Date of Birth -->
+      <!-- NODE 08: Date -->
       <div class="red-node" id="rnode-8">
         <div class="node-shell">
           <div class="node-id">NODE 21/25 — TYPE:DATE</div>
           <div class="node-label">WHEN WERE YOU BORN?</div>
-          <!-- INPUT INSTANCE 21 / 25 -->
           <input type="date" class="red-input" id="r-dob" />
           <div class="node-response" id="r-dob-res"></div>
         </div>
       </div>
 
-      <!-- NODE 09: Baseline Test -->
+      <!-- NODE 09: Range -->
       <div class="red-node" id="rnode-9">
         <div class="node-shell">
           <div class="node-id">NODE 22/25 — TYPE:RANGE</div>
           <div class="node-label">BASELINE STABILITY TEST</div>
-          <!-- INPUT INSTANCE 22 / 25 -->
-          <input type="range" class="red-input" id="r-range"
-                 min="0" max="100" value="50" />
+          <input type="range" class="red-input" id="r-range" min="0" max="100" value="50" />
           <div class="node-response" id="r-range-res"></div>
         </div>
       </div>
 
-      <!-- NODE 10: Escape Attempt -->
+      <!-- NODE 10: Escape -->
       <div class="red-node" id="rnode-10">
         <div class="node-shell">
           <div class="node-id">NODE 23/25 — TYPE:RADIO</div>
           <div class="node-label">DO YOU WANT TO ESCAPE THE SYSTEM?</div>
-          <!-- INPUT INSTANCE 23 / 25 -->
           <div class="red-radio-row" id="escape-yes-row">
-            <input type="radio" class="red-input" name="r-escape"
-                   value="yes" id="r-escape-yes" /> yes
+            <input type="radio" class="red-input" name="r-escape" value="yes" id="r-escape-yes" /> yes
           </div>
           <div class="red-radio-row">
-            <input type="radio" class="red-input" name="r-escape"
-                   value="no" id="r-escape-no" /> no
+            <input type="radio" class="red-input" name="r-escape" value="no" id="r-escape-no" /> no
           </div>
           <div class="node-response" id="r-escape-res"></div>
         </div>
       </div>
 
-      <!-- NODE 11: Final Truth -->
+      <!-- NODE 11: Truth -->
       <div class="red-node" id="rnode-11">
         <div class="node-shell">
           <div class="node-id">NODE 24/25 — TYPE:TEXT</div>
           <div class="node-label">WHAT DO YOU KNOW NOW?</div>
-          <!-- INPUT INSTANCE 24 / 25 -->
-          <input type="text" class="red-input" id="r-truth"
-                 placeholder="nothing is real..." autocomplete="off" />
+          <input type="text" class="red-input" id="r-truth" placeholder="nothing is real..." autocomplete="off" />
           <div class="node-response" id="r-truth-res"></div>
         </div>
       </div>
 
-      <!-- NODE 12: Collapse Button -->
+      <!-- NODE 12: Collapse -->
       <div class="red-node" id="rnode-12">
         <div class="node-shell">
           <div class="node-id">NODE 25/25 — TYPE:BUTTON</div>
           <div class="node-label">INITIATE COLLAPSE SEQUENCE</div>
-          <!-- INPUT INSTANCE 25 / 25 -->
-          <input type="button" class="red-input" id="r-collapse" value="COLLAPSE" />
+          <input type="button" class="red-input red-input--btn" id="r-collapse" value="COLLAPSE" />
           <div class="node-response" id="r-collapse-res"></div>
         </div>
       </div>
 
-    </div><!-- /#network-container -->
+    </div>
 
-    <!-- ── Zoom overlay ── -->
+    <!-- Zoom overlay -->
     <div id="zoom-overlay">
       <div id="zoomed-node">
         <button class="zoom-close" id="zoom-close">[ CLOSE ]</button>
@@ -184,22 +159,19 @@
       </div>
     </div>
 
-    <!-- ── White collapse scene ── -->
+    <!-- White collapse scene -->
     <div id="white-scene">
-      <div class="white-scene-title">
-        You have reached the truth.
-      </div>
+      <div class="white-scene-title">You have reached the truth.</div>
       <div class="white-scene-sub">
         Reality is irrational. Meaning is uncertain.<br/>
         Knowing the absurdity of the world,<br/>
         will you continue to live?
       </div>
-      <input type="button" id="btn-yes" value="YES"
-             onclick="window.location.href='index.html'" />
+      <input type="button" id="btn-yes" value="YES" onclick="window.location.href='index.html'" />
     </div>
 
-  </div><!-- /#red-page -->
+  </div>
 
-  <script src="js/red.js"></script>
+  <script type="module" src="js/red.js"></script>
 </body>
 </html>
