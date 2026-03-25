@@ -21,19 +21,21 @@ const app    = new Application(canvas);
 
 app.load('https://prod.spline.design/5iDn8kJog7o5wvBI/scene.splinecode')
   .then(() => {
-  /* Hide Bunny */
-  try {
-    const bunny = app.findObjectByName('Bunny');
-    if (bunny) bunny.visible = false;
-  } catch(e) {}
+    try {
+      const bunny = app.findObjectByName('Bunny');
+      if (bunny) bunny.visible = false;
+    } catch(e) {
+      console.log('bunny hide failed:', e);
+    }
 
-  /* Hide watermark div injected by Spline */
-  setTimeout(() => {
-    document.querySelectorAll('body > div, #red-page ~ div').forEach(el => {
-      el.style.display = 'none';
-    });
-  }, 500);
-})
+    /* Hide watermark */
+    setTimeout(() => {
+      document.querySelectorAll('body > div').forEach(el => {
+        if (!el.id) el.style.display = 'none';
+      });
+    }, 1000);
+  })
+  .catch(err => console.warn('Spline error:', err));
 
 /* ============================================
    NODE LAYOUT — random positions, no overlap
