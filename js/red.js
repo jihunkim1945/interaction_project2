@@ -21,11 +21,19 @@ const app    = new Application(canvas);
 
 app.load('https://prod.spline.design/5iDn8kJog7o5wvBI/scene.splinecode')
   .then(() => {
-    /* Hide the Bunny object */
-   const bunny = app.findObjectByName('Bunny');
-if (bunny) bunny.visible = false;
-  })
-  .catch(err => console.warn('Spline load error:', err));
+  /* Hide Bunny */
+  try {
+    const bunny = app.findObjectByName('Bunny');
+    if (bunny) bunny.visible = false;
+  } catch(e) {}
+
+  /* Hide watermark div injected by Spline */
+  setTimeout(() => {
+    document.querySelectorAll('body > div, #red-page ~ div').forEach(el => {
+      el.style.display = 'none';
+    });
+  }, 500);
+})
 
 /* ============================================
    NODE LAYOUT — random positions, no overlap
