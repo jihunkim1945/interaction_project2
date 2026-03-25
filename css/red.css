@@ -292,3 +292,12 @@ body, html {
 #red-page > div:last-of-type:not(#zoom-overlay):not(#white-scene) {
   display: none !important;
 }
+/* Hide Spline watermark */
+#red-page > a[href*="spline"],
+body > div:not(#red-page),
+canvas + div,
+div:has(> a[href*="spline.design"]) {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
