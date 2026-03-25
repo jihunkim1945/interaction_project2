@@ -12,13 +12,12 @@
 
     <a href="index.html" class="nav-back green">← EXIT</a>
 
-    <!-- Spline 3D background -->
-    <canvas id="spline-canvas"></canvas>
+    <!-- Matrix rain canvas — full background -->
+    <canvas id="matrix-canvas"></canvas>
 
-    <!-- Network nodes floating above Spline -->
+    <!-- Floating input nodes -->
     <div id="network-container">
 
-      <!-- NODE 01: Name -->
       <div class="red-node" id="rnode-1">
         <div class="node-shell">
           <div class="node-id">NODE 14/25 — TYPE:TEXT</div>
@@ -28,7 +27,6 @@
         </div>
       </div>
 
-      <!-- NODE 02: Memory -->
       <div class="red-node" id="rnode-2">
         <div class="node-shell">
           <div class="node-id">NODE 15/25 — TYPE:PASSWORD</div>
@@ -38,7 +36,6 @@
         </div>
       </div>
 
-      <!-- NODE 03: Identity -->
       <div class="red-node" id="rnode-3">
         <div class="node-shell">
           <div class="node-id">NODE 16/25 — TYPE:RADIO</div>
@@ -51,7 +48,6 @@
         </div>
       </div>
 
-      <!-- NODE 04: Age -->
       <div class="red-node" id="rnode-4">
         <div class="node-shell">
           <div class="node-id">NODE 17/25 — TYPE:NUMBER</div>
@@ -61,20 +57,18 @@
         </div>
       </div>
 
-      <!-- NODE 05: Freedom -->
       <div class="red-node" id="rnode-5">
         <div class="node-shell">
           <div class="node-id">NODE 18/25 — TYPE:CHECKBOX</div>
           <div class="node-label">ARE YOU FREE?</div>
           <div class="red-radio-row" style="margin-top:4px;">
             <input type="checkbox" class="red-input" id="r-free" />
-            <span style="font-size:10px;color:var(--matrix-green);margin-left:6px;">I AM FREE</span>
+            <span style="font-size:10px;color:#00ff41;margin-left:6px;">I AM FREE</span>
           </div>
           <div class="node-response" id="r-free-res"></div>
         </div>
       </div>
 
-      <!-- NODE 06: Search -->
       <div class="red-node" id="rnode-6">
         <div class="node-shell">
           <div class="node-id">NODE 19/25 — TYPE:SEARCH</div>
@@ -84,7 +78,6 @@
         </div>
       </div>
 
-      <!-- NODE 07: File -->
       <div class="red-node" id="rnode-7">
         <div class="node-shell">
           <div class="node-id">NODE 20/25 — TYPE:FILE</div>
@@ -94,7 +87,6 @@
         </div>
       </div>
 
-      <!-- NODE 08: Date -->
       <div class="red-node" id="rnode-8">
         <div class="node-shell">
           <div class="node-id">NODE 21/25 — TYPE:DATE</div>
@@ -104,7 +96,6 @@
         </div>
       </div>
 
-      <!-- NODE 09: Range -->
       <div class="red-node" id="rnode-9">
         <div class="node-shell">
           <div class="node-id">NODE 22/25 — TYPE:RANGE</div>
@@ -114,7 +105,6 @@
         </div>
       </div>
 
-      <!-- NODE 10: Escape -->
       <div class="red-node" id="rnode-10">
         <div class="node-shell">
           <div class="node-id">NODE 23/25 — TYPE:RADIO</div>
@@ -123,13 +113,12 @@
             <input type="radio" class="red-input" name="r-escape" value="yes" id="r-escape-yes" /> yes
           </div>
           <div class="red-radio-row">
-            <input type="radio" class="red-input" name="r-escape" value="no" id="r-escape-no" /> no
+            <input type="radio" class="red-input" name="r-escape" value="no" /> no
           </div>
           <div class="node-response" id="r-escape-res"></div>
         </div>
       </div>
 
-      <!-- NODE 11: Truth -->
       <div class="red-node" id="rnode-11">
         <div class="node-shell">
           <div class="node-id">NODE 24/25 — TYPE:TEXT</div>
@@ -139,12 +128,11 @@
         </div>
       </div>
 
-      <!-- NODE 12: Collapse -->
       <div class="red-node" id="rnode-12">
         <div class="node-shell">
           <div class="node-id">NODE 25/25 — TYPE:BUTTON</div>
           <div class="node-label">INITIATE COLLAPSE SEQUENCE</div>
-          <input type="button" class="red-input red-input--btn" id="r-collapse" value="COLLAPSE" />
+          <input type="button" class="red-input red-btn" id="r-collapse" value="COLLAPSE" />
           <div class="node-response" id="r-collapse-res"></div>
         </div>
       </div>
@@ -172,6 +160,6 @@
 
   </div>
 
-  <script type="module" src="js/red.js"></script>
+  <script src="js/red.js"></script>
 </body>
 </html>
