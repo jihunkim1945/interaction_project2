@@ -4,162 +4,469 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>RED PILL — System Dissolution</title>
-  <link rel="stylesheet" href="css/global.css" />
-  <link rel="stylesheet" href="css/red.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body, html { width: 100%; height: 100%; background: #000; overflow: hidden; }
+
+    #red-page {
+      position: fixed; inset: 0;
+      background: #000;
+      font-family: 'Courier New', monospace;
+    }
+
+    #spline-canvas {
+      position: fixed; top: 0; left: 0;
+      width: 100% !important;
+      height: 100% !important;
+      z-index: 0;
+    }
+
+    /* Hide Spline watermark */
+    .spline-watermark,
+    a[href*="spline.design"] { display: none !important; }
+
+    .nav-back {
+      position: fixed; top: 16px; left: 16px;
+      z-index: 9999;
+      font-family: 'Courier New', monospace;
+      font-size: 11px; letter-spacing: 0.15em;
+      text-transform: uppercase; text-decoration: none;
+      padding: 6px 12px;
+      color: #00ff41; border: 1px solid #00ff41;
+      transition: all 0.15s;
+    }
+    .nav-back:hover { background: #00ff41; color: #000; }
+
+    #network-container {
+      position: absolute; inset: 0;
+      z-index: 2; pointer-events: none;
+    }
+
+    .red-node {
+      position: absolute; width: 210px;
+      transform: translate(-50%, -50%);
+      pointer-events: auto; cursor: pointer;
+    }
+    .red-node:hover { filter: drop-shadow(0 0 10px #00ff41); z-index: 10; }
+
+    .node-shell {
+      border: 1px solid rgba(0,255,65,0.35);
+      background: rgba(0,0,0,0.78);
+      backdrop-filter: blur(8px);
+      padding: 10px 12px;
+      transition: border-color 0.3s;
+    }
+    .red-node:hover .node-shell { border-color: #00ff41; }
+
+    .node-id {
+      font-size: 8px; color: rgba(0,255,65,0.4);
+      letter-spacing: 0.18em; margin-bottom: 4px; text-transform: uppercase;
+    }
+    .node-label {
+      font-size: 10px; color: #00ff41;
+      letter-spacing: 0.08em; margin-bottom: 8px;
+      text-transform: uppercase; line-height: 1.35;
+    }
+
+    .red-input {
+      width: 100%; background: transparent;
+      border: none; border-bottom: 1px solid rgba(0,255,65,0.3);
+      color: #00ff41; font-family: 'Courier New', monospace;
+      font-size: 11px; padding: 4px 2px; outline: none;
+      letter-spacing: 0.08em; transition: border-color 0.3s;
+    }
+    .red-input:focus { border-color: #00ff41; }
+    .red-input::placeholder { color: rgba(0,255,65,0.2); font-size: 10px; }
+    .red-input[type="range"] { border: none; accent-color: #00ff41; padding: 0; margin: 4px 0; cursor: pointer; }
+    .red-input[type="radio"],
+    .red-input[type="checkbox"] { accent-color: #00ff41; border: none; padding: 0; cursor: pointer; width: auto; }
+    .red-input[type="file"] { font-size: 9px; color: rgba(0,255,65,0.4); border: none; cursor: pointer; padding: 0; }
+    .red-input[type="date"] { color-scheme: dark; }
+
+    .red-btn {
+      border: 1px solid rgba(0,255,65,0.35); padding: 6px;
+      text-align: center; letter-spacing: 0.2em;
+      cursor: pointer; margin-top: 4px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .red-btn:hover { border-color: #00ff41; background: rgba(0,255,65,0.07); }
+
+    .red-radio-row {
+      display: flex; align-items: center;
+      gap: 6px; margin-bottom: 4px;
+      font-size: 10px; color: #00ff41;
+    }
+
+    .node-response {
+      font-size: 9px; color: #ff3333;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      margin-top: 6px; opacity: 0; transition: opacity 0.3s;
+      line-height: 1.5; min-height: 13px;
+    }
+    .node-response.show  { opacity: 1; }
+    .node-response.green { color: #00ff41; }
+
+    #zoom-overlay {
+      position: fixed; inset: 0; z-index: 100;
+      display: none; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.93); padding: 20px;
+    }
+    #zoom-overlay.active { display: flex; }
+
+    #zoomed-node {
+      border: 1px solid #00ff41; background: rgba(0,0,0,0.97);
+      padding: 32px; max-width: 480px; width: 100%; position: relative;
+    }
+    .zoom-close {
+      position: absolute; top: 12px; right: 12px;
+      color: rgba(0,255,65,0.45); font-family: 'Courier New', monospace;
+      font-size: 10px; letter-spacing: 0.2em; cursor: pointer;
+      text-transform: uppercase; background: none; border: none;
+    }
+    .zoom-close:hover { color: #00ff41; }
+    #zoomed-node .node-label { font-size: 13px; margin-bottom: 14px; }
+    #zoomed-node .red-input  { font-size: 13px; padding: 8px 2px; }
+    #zoomed-node .node-response { font-size: 11px; }
+    #escape-yes-row { transition: transform 0.15s ease; }
+
+    #white-scene {
+      position: fixed; inset: 0; z-index: 200;
+      background: #fff; display: none;
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 32px; padding: 40px; text-align: center;
+    }
+    #white-scene.active { display: flex; }
+    .white-scene-title {
+      font-family: 'Courier New', monospace;
+      font-size: clamp(16px,2.8vw,24px);
+      color: #000; letter-spacing: 0.08em; line-height: 1.7;
+    }
+    .white-scene-sub {
+      font-family: 'Courier New', monospace;
+      font-size: clamp(11px,1.4vw,13px);
+      color: #555; letter-spacing: 0.12em; line-height: 2;
+    }
+    #btn-yes {
+      font-family: 'Arial Black', Arial, sans-serif;
+      font-size: 14px; letter-spacing: 0.3em; text-transform: uppercase;
+      color: #000; background: transparent; border: 2px solid #000;
+      padding: 14px 48px; cursor: pointer;
+    }
+    #btn-yes:hover { background: #000; color: #fff; }
+
+    @keyframes screenShake {
+      0%,100% { transform: translateX(0); }
+      20% { transform: translateX(-8px) rotate(-0.5deg); }
+      40% { transform: translateX(8px) rotate(0.5deg); }
+      60% { transform: translateX(-5px); }
+      80% { transform: translateX(5px); }
+    }
+    @keyframes glitchFlicker {
+      0%,100% { opacity: 1; }
+      25% { opacity: 0.7; filter: hue-rotate(90deg); }
+      75% { opacity: 0.85; filter: hue-rotate(-90deg); }
+    }
+    .screen-shake   { animation: screenShake 0.4s ease; }
+    .glitch-flicker { animation: glitchFlicker 0.3s ease 2; }
+  </style>
 </head>
 <body>
-  <div id="red-page">
+<div id="red-page">
 
-    <a href="index.html" class="nav-back green">← EXIT</a>
+  <a href="index.html" class="nav-back">← EXIT</a>
 
-    <!-- Spline 3D background -->
-    <canvas id="spline-canvas"></canvas>
+  <canvas id="spline-canvas"></canvas>
 
-    <!-- Floating input nodes -->
-    <div id="network-container">
+  <div id="network-container">
 
-      <div class="red-node" id="rnode-1">
-        <div class="node-shell">
-          <div class="node-id">NODE 14/25 — TYPE:TEXT</div>
-          <div class="node-label">ENTER YOUR NAME</div>
-          <input type="text" class="red-input" id="r-name" placeholder="name..." autocomplete="off" />
-          <div class="node-response" id="r-name-res"></div>
-        </div>
+    <div class="red-node" id="rnode-1"><div class="node-shell">
+      <div class="node-id">NODE 14/25 — TYPE:TEXT</div>
+      <div class="node-label">ENTER YOUR NAME</div>
+      <input type="text" class="red-input" id="r-name" placeholder="name..." autocomplete="off" />
+      <div class="node-response" id="r-name-res"></div>
+    </div></div>
+
+    <div class="red-node" id="rnode-2"><div class="node-shell">
+      <div class="node-id">NODE 15/25 — TYPE:PASSWORD</div>
+      <div class="node-label">ENTER A MEMORY YOU BELIEVE IS REAL</div>
+      <input type="password" class="red-input" id="r-memory" placeholder="memory..." autocomplete="off" />
+      <div class="node-response" id="r-memory-res"></div>
+    </div></div>
+
+    <div class="red-node" id="rnode-3"><div class="node-shell">
+      <div class="node-id">NODE 16/25 — TYPE:RADIO</div>
+      <div class="node-label">CHOOSE WHO YOU ARE</div>
+      <div class="red-radio-row"><input type="radio" class="red-input" name="r-identity" value="human" /> human</div>
+      <div class="red-radio-row"><input type="radio" class="red-input" name="r-identity" value="citizen" /> citizen</div>
+      <div class="red-radio-row"><input type="radio" class="red-input" name="r-identity" value="user" /> user</div>
+      <div class="red-radio-row"><input type="radio" class="red-input" name="r-identity" value="data" /> data</div>
+      <div class="node-response" id="r-identity-res"></div>
+    </div></div>
+
+    <div class="red-node" id="rnode-4"><div class="node-shell">
+      <div class="node-id">NODE 17/25 — TYPE:NUMBER</div>
+      <div class="node-label">ENTER YOUR AGE</div>
+      <input type="number" class="red-input" id="r-age" placeholder="age..." min="0" max="999" />
+      <div class="node-response" id="r-age-res"></div>
+    </div></div>
+
+    <div class="red-node" id="rnode-5"><div class="node-shell">
+      <div class="node-id">NODE 18/25 — TYPE:CHECKBOX</div>
+      <div class="node-label">ARE YOU FREE?</div>
+      <div class="red-radio-row" style="margin-top:4px;">
+        <input type="checkbox" class="red-input" id="r-free" />
+        <span style="font-size:10px;color:#00ff41;margin-left:6px;">I AM FREE</span>
       </div>
+      <div class="node-response" id="r-free-res"></div>
+    </div></div>
 
-      <div class="red-node" id="rnode-2">
-        <div class="node-shell">
-          <div class="node-id">NODE 15/25 — TYPE:PASSWORD</div>
-          <div class="node-label">ENTER A MEMORY YOU BELIEVE IS REAL</div>
-          <input type="password" class="red-input" id="r-memory" placeholder="memory..." autocomplete="off" />
-          <div class="node-response" id="r-memory-res"></div>
-        </div>
+    <div class="red-node" id="rnode-6"><div class="node-shell">
+      <div class="node-id">NODE 19/25 — TYPE:SEARCH</div>
+      <div class="node-label">SEARCH YOUR WORLD</div>
+      <input type="search" class="red-input" id="r-search" placeholder="query..." autocomplete="off" />
+      <div class="node-response" id="r-search-res"></div>
+    </div></div>
+
+    <div class="red-node" id="rnode-7"><div class="node-shell">
+      <div class="node-id">NODE 20/25 — TYPE:FILE</div>
+      <div class="node-label">UPLOAD YOUR MEMORY</div>
+      <input type="file" class="red-input" id="r-file" />
+      <div class="node-response" id="r-file-res"></div>
+    </div></div>
+
+    <div class="red-node" id="rnode-8"><div class="node-shell">
+      <div class="node-id">NODE 21/25 — TYPE:DATE</div>
+      <div class="node-label">WHEN WERE YOU BORN?</div>
+      <input type="date" class="red-input" id="r-dob" />
+      <div class="node-response" id="r-dob-res"></div>
+    </div></div>
+
+    <div class="red-node" id="rnode-9"><div class="node-shell">
+      <div class="node-id">NODE 22/25 — TYPE:RANGE</div>
+      <div class="node-label">BASELINE STABILITY TEST</div>
+      <input type="range" class="red-input" id="r-range" min="0" max="100" value="50" />
+      <div class="node-response" id="r-range-res"></div>
+    </div></div>
+
+    <div class="red-node" id="rnode-10"><div class="node-shell">
+      <div class="node-id">NODE 23/25 — TYPE:RADIO</div>
+      <div class="node-label">DO YOU WANT TO ESCAPE THE SYSTEM?</div>
+      <div class="red-radio-row" id="escape-yes-row">
+        <input type="radio" class="red-input" name="r-escape" value="yes" id="r-escape-yes" /> yes
       </div>
-
-      <div class="red-node" id="rnode-3">
-        <div class="node-shell">
-          <div class="node-id">NODE 16/25 — TYPE:RADIO</div>
-          <div class="node-label">CHOOSE WHO YOU ARE</div>
-          <div class="red-radio-row"><input type="radio" class="red-input" name="r-identity" value="human" /> human</div>
-          <div class="red-radio-row"><input type="radio" class="red-input" name="r-identity" value="citizen" /> citizen</div>
-          <div class="red-radio-row"><input type="radio" class="red-input" name="r-identity" value="user" /> user</div>
-          <div class="red-radio-row"><input type="radio" class="red-input" name="r-identity" value="data" /> data</div>
-          <div class="node-response" id="r-identity-res"></div>
-        </div>
+      <div class="red-radio-row">
+        <input type="radio" class="red-input" name="r-escape" value="no" /> no
       </div>
+      <div class="node-response" id="r-escape-res"></div>
+    </div></div>
 
-      <div class="red-node" id="rnode-4">
-        <div class="node-shell">
-          <div class="node-id">NODE 17/25 — TYPE:NUMBER</div>
-          <div class="node-label">ENTER YOUR AGE</div>
-          <input type="number" class="red-input" id="r-age" placeholder="age..." min="0" max="999" />
-          <div class="node-response" id="r-age-res"></div>
-        </div>
-      </div>
+    <div class="red-node" id="rnode-11"><div class="node-shell">
+      <div class="node-id">NODE 24/25 — TYPE:TEXT</div>
+      <div class="node-label">WHAT DO YOU KNOW NOW?</div>
+      <input type="text" class="red-input" id="r-truth" placeholder="nothing is real..." autocomplete="off" />
+      <div class="node-response" id="r-truth-res"></div>
+    </div></div>
 
-      <div class="red-node" id="rnode-5">
-        <div class="node-shell">
-          <div class="node-id">NODE 18/25 — TYPE:CHECKBOX</div>
-          <div class="node-label">ARE YOU FREE?</div>
-          <div class="red-radio-row" style="margin-top:4px;">
-            <input type="checkbox" class="red-input" id="r-free" />
-            <span style="font-size:10px;color:#00ff41;margin-left:6px;">I AM FREE</span>
-          </div>
-          <div class="node-response" id="r-free-res"></div>
-        </div>
-      </div>
-
-      <div class="red-node" id="rnode-6">
-        <div class="node-shell">
-          <div class="node-id">NODE 19/25 — TYPE:SEARCH</div>
-          <div class="node-label">SEARCH YOUR WORLD</div>
-          <input type="search" class="red-input" id="r-search" placeholder="query..." autocomplete="off" />
-          <div class="node-response" id="r-search-res"></div>
-        </div>
-      </div>
-
-      <div class="red-node" id="rnode-7">
-        <div class="node-shell">
-          <div class="node-id">NODE 20/25 — TYPE:FILE</div>
-          <div class="node-label">UPLOAD YOUR MEMORY</div>
-          <input type="file" class="red-input" id="r-file" />
-          <div class="node-response" id="r-file-res"></div>
-        </div>
-      </div>
-
-      <div class="red-node" id="rnode-8">
-        <div class="node-shell">
-          <div class="node-id">NODE 21/25 — TYPE:DATE</div>
-          <div class="node-label">WHEN WERE YOU BORN?</div>
-          <input type="date" class="red-input" id="r-dob" />
-          <div class="node-response" id="r-dob-res"></div>
-        </div>
-      </div>
-
-      <div class="red-node" id="rnode-9">
-        <div class="node-shell">
-          <div class="node-id">NODE 22/25 — TYPE:RANGE</div>
-          <div class="node-label">BASELINE STABILITY TEST</div>
-          <input type="range" class="red-input" id="r-range" min="0" max="100" value="50" />
-          <div class="node-response" id="r-range-res"></div>
-        </div>
-      </div>
-
-      <div class="red-node" id="rnode-10">
-        <div class="node-shell">
-          <div class="node-id">NODE 23/25 — TYPE:RADIO</div>
-          <div class="node-label">DO YOU WANT TO ESCAPE THE SYSTEM?</div>
-          <div class="red-radio-row" id="escape-yes-row">
-            <input type="radio" class="red-input" name="r-escape" value="yes" id="r-escape-yes" /> yes
-          </div>
-          <div class="red-radio-row">
-            <input type="radio" class="red-input" name="r-escape" value="no" /> no
-          </div>
-          <div class="node-response" id="r-escape-res"></div>
-        </div>
-      </div>
-
-      <div class="red-node" id="rnode-11">
-        <div class="node-shell">
-          <div class="node-id">NODE 24/25 — TYPE:TEXT</div>
-          <div class="node-label">WHAT DO YOU KNOW NOW?</div>
-          <input type="text" class="red-input" id="r-truth" placeholder="nothing is real..." autocomplete="off" />
-          <div class="node-response" id="r-truth-res"></div>
-        </div>
-      </div>
-
-      <div class="red-node" id="rnode-12">
-        <div class="node-shell">
-          <div class="node-id">NODE 25/25 — TYPE:BUTTON</div>
-          <div class="node-label">INITIATE COLLAPSE SEQUENCE</div>
-          <input type="button" class="red-input red-btn" id="r-collapse" value="COLLAPSE" />
-          <div class="node-response" id="r-collapse-res"></div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Zoom overlay -->
-    <div id="zoom-overlay">
-      <div id="zoomed-node">
-        <button class="zoom-close" id="zoom-close">[ CLOSE ]</button>
-        <div id="zoomed-content"></div>
-      </div>
-    </div>
-
-    <!-- White collapse scene -->
-    <div id="white-scene">
-      <div class="white-scene-title">You have reached the truth.</div>
-      <div class="white-scene-sub">
-        Reality is irrational. Meaning is uncertain.<br/>
-        Knowing the absurdity of the world,<br/>
-        will you continue to live?
-      </div>
-      <input type="button" id="btn-yes" value="YES" onclick="window.location.href='index.html'" />
-    </div>
+    <div class="red-node" id="rnode-12"><div class="node-shell">
+      <div class="node-id">NODE 25/25 — TYPE:BUTTON</div>
+      <div class="node-label">INITIATE COLLAPSE SEQUENCE</div>
+      <input type="button" class="red-input red-btn" id="r-collapse" value="COLLAPSE" />
+      <div class="node-response" id="r-collapse-res"></div>
+    </div></div>
 
   </div>
 
-  <script type="module" src="js/red.js"></script>
+  <div id="zoom-overlay">
+    <div id="zoomed-node">
+      <button class="zoom-close" id="zoom-close">[ CLOSE ]</button>
+      <div id="zoomed-content"></div>
+    </div>
+  </div>
+
+  <div id="white-scene">
+    <div class="white-scene-title">You have reached the truth.</div>
+    <div class="white-scene-sub">
+      Reality is irrational. Meaning is uncertain.<br/>
+      Knowing the absurdity of the world,<br/>
+      will you continue to live?
+    </div>
+    <input type="button" id="btn-yes" value="YES" onclick="location.href='index.html'" />
+  </div>
+
+</div>
+
+<script type="module">
+import { Application } from 'https://unpkg.com/@splinetool/runtime/build/runtime.js';
+
+/* helpers */
+const R = (a,b) => Math.random()*(b-a)+a;
+const I = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+const D = (fn,ms) => { let t; return (...a) => { clearTimeout(t); t=setTimeout(()=>fn(...a),ms); }; };
+
+/* ── Spline ── */
+const cvs = document.getElementById('spline-canvas');
+const app = new Application(cvs);
+app.load('https://prod.spline.design/5iDn8kJog7o5wvBI/scene.splinecode')
+  .then(() => {
+    /* hide watermark */
+    setTimeout(() => {
+      document.querySelectorAll('body > div').forEach(el => {
+        if (!el.id) el.style.cssText = 'display:none!important';
+      });
+    }, 1000);
+  })
+  .catch(e => console.warn('Spline error:', e));
+
+/* ── Node layout ── */
+const nodes = [...document.querySelectorAll('.red-node')];
+const data  = [];
+const MIN=230, PAD=120, NW=210, NH=120;
+
+function place() {
+  const W=innerWidth, H=innerHeight, pl=[];
+  nodes.forEach(el => {
+    let x,y,ok,n=0;
+    do {
+      x=R(PAD+NW/2,W-PAD-NW/2);
+      y=R(PAD+NH/2,H-PAD-NH/2);
+      ok=pl.every(p=>Math.hypot(x-p.x,y-p.y)>MIN);
+      n++;
+    } while(!ok&&n<500);
+    const d={el,x,y,bx:x,by:y,ph:R(0,Math.PI*2),amp:R(5,12),fr:R(0.0003,0.0009)};
+    pl.push({x,y}); data.push(d);
+    el.style.left=x+'px'; el.style.top=y+'px';
+  });
+}
+place();
+
+/* ── Drift ── */
+let tick=0, dead=false;
+(function drift(){
+  if(dead) return;
+  tick++;
+  data.forEach(d=>{
+    const t=tick*d.fr;
+    d.x=d.bx+Math.sin(t+d.ph)*d.amp;
+    d.y=d.by+Math.cos(t*.7+d.ph)*d.amp*.6;
+    d.el.style.left=d.x+'px'; d.el.style.top=d.y+'px';
+  });
+  requestAnimationFrame(drift);
+})();
+
+/* ── Zoom ── */
+const ov=document.getElementById('zoom-overlay');
+const zc=document.getElementById('zoomed-content');
+const open=el=>{ zc.innerHTML=el.querySelector('.node-shell').innerHTML; ov.classList.add('active'); bind(zc); };
+const close=()=>ov.classList.remove('active');
+document.getElementById('zoom-close').onclick=close;
+ov.addEventListener('click',e=>{ if(e.target===ov)close(); });
+nodes.forEach(el=>el.addEventListener('click',e=>{ if(e.target.tagName!=='INPUT')open(el); }));
+
+/* ── Interactions ── */
+function bind(r) {
+  const g=(id)=>r.querySelector(id);
+
+  const nm=g('#r-name'), nmR=g('#r-name-res');
+  if(nm) nm.addEventListener('change',()=>{
+    if(!nm.value.trim())return;
+    const c=nm.value.split('').map(x=>x.charCodeAt(0)).join('-');
+    nmR.textContent='IDENTITY ENCODED: '+c; nmR.classList.add('show'); nm.value=c;
+  });
+
+  const mm=g('#r-memory'), mmR=g('#r-memory-res');
+  if(mm) mm.addEventListener('blur',()=>{
+    if(!mm.value)return;
+    mm.type='text'; mmR.textContent='MEMORY UNVERIFIED — DATA EXPOSED'; mmR.classList.add('show');
+  });
+
+  r.querySelectorAll('input[name="r-identity"]').forEach(x=>x.addEventListener('change',()=>{
+    const res=r.querySelector('#r-identity-res');
+    setTimeout(()=>{ x.checked=false; res.textContent='IDENTITY CANNOT BE ASSIGNED — OVERRIDE ACTIVE'; res.classList.add('show'); },300);
+  }));
+
+  const ag=g('#r-age'), agR=g('#r-age-res');
+  if(ag) ag.addEventListener('change',()=>{
+    if(!ag.value)return;
+    const n=+ag.value;
+    agR.textContent=n+' → '+n.toString(2)+' → '+[0,0,0,0].map(()=>I(0,999)).join('-');
+    agR.classList.add('show'); ag.value='';
+  });
+
+  const fr=g('#r-free'), frR=g('#r-free-res');
+  if(fr) fr.addEventListener('change',()=>{
+    if(!fr.checked)return;
+    frR.textContent='STATEMENT INVALID — FREEDOM UNVERIFIABLE'; frR.classList.add('show'); fr.checked=false;
+  });
+
+  const H=['GLOBAL SYSTEM FAILURE REPORTED','SIMULATION COLLAPSE DETECTED',
+    'REALITY INFRASTRUCTURE UNSTABLE','HUMAN MEMORY ARCHIVES CORRUPTED',
+    'IDENTITY DATABASE BREACH IMMINENT','CONSENSUS REALITY DEGRADING'];
+  const sr=g('#r-search'), srR=g('#r-search-res');
+  if(sr) sr.addEventListener('keydown',e=>{
+    if(e.key!=='Enter'||!sr.value.trim())return;
+    srR.innerHTML=H.sort(()=>Math.random()-.5).slice(0,3).map(x=>'▸ '+x).join('<br/>');
+    srR.classList.add('show','green');
+  });
+
+  const fi=g('#r-file'), fiR=g('#r-file-res');
+  if(fi) fi.addEventListener('change',()=>{
+    if(!fi.files.length)return;
+    setTimeout(()=>{ fiR.innerHTML='MEMORY FILE EMPTY<br/>YOU NEVER EXISTED'; fiR.classList.add('show'); fi.value=''; },600);
+  });
+
+  const db=g('#r-dob'), dbR=g('#r-dob-res');
+  if(db) db.addEventListener('change',()=>{ if(!db.value)return; dbR.textContent='YOU WERE NEVER BORN'; dbR.classList.add('show'); });
+
+  let shk=false;
+  const rn=g('#r-range'), rnR=g('#r-range-res');
+  if(rn) rn.addEventListener('input', D(()=>{
+    if(shk)return; shk=true;
+    const p=document.getElementById('red-page');
+    p.classList.add('screen-shake','glitch-flicker');
+    rnR.textContent='BASELINE UNSTABLE — REALITY DISTORTING'; rnR.classList.add('show');
+    setTimeout(()=>{ p.classList.remove('screen-shake','glitch-flicker'); shk=false; },600);
+  },150));
+
+  let ec=0;
+  const yr=r.querySelector('#escape-yes-row'), yi=r.querySelector('#r-escape-yes'), er=r.querySelector('#r-escape-res');
+  if(yr){
+    const ev=e=>{
+      if(ec>=3)return;
+      e.preventDefault(); e.stopPropagation();
+      yr.style.transform=`translate(${R(-90,90)}px,${R(-60,60)}px)`;
+      ec++; er.textContent=`ESCAPE ATTEMPT ${ec}/3 — ACCESS DENIED`; er.classList.add('show');
+      if(ec>=3){
+        setTimeout(()=>{ yr.style.transform=''; if(yi)yi.checked=true; er.innerHTML='ESCAPE ATTEMPT DETECTED<br/>ACCESS GRANTED'; setTimeout(collapse,1300); },700);
+      } else { setTimeout(()=>yr.style.transform='',600); }
+    };
+    yr.addEventListener('click',ev); yr.addEventListener('mousedown',ev);
+  }
+
+  const tr=g('#r-truth'), trR=g('#r-truth-res');
+  if(tr) tr.addEventListener('change',()=>{ if(!tr.value.trim())return; trR.textContent='STATEMENT LOGGED — SYSTEM ACKNOWLEDGES'; trR.classList.add('show','green'); });
+
+  const cb=g('#r-collapse'), cbR=g('#r-collapse-res');
+  if(cb) cb.addEventListener('click',()=>{ if(cbR){cbR.textContent='INITIATING COLLAPSE...'; cbR.classList.add('show','green');} setTimeout(collapse,800); });
+}
+
+bind(document);
+
+/* ── Collapse ── */
+function collapse(){
+  if(dead)return; dead=true; close();
+  const p=document.getElementById('red-page');
+  let fc=0;
+  const iv=setInterval(()=>{
+    p.style.filter=fc%2===0?'brightness(3) invert(1) hue-rotate(90deg)':'';
+    fc++;
+    if(fc>10){
+      clearInterval(iv); p.style.filter='';
+      data.forEach(d=>{ d.el.style.transition='all 0.6s ease'; d.el.style.opacity='0'; d.el.style.transform=`translate(${R(-200,200)}px,${R(-200,200)}px) scale(0)`; });
+      cvs.style.transition='opacity 0.8s'; cvs.style.opacity='0';
+      setTimeout(()=>document.getElementById('white-scene').classList.add('active'),900);
+    }
+  },100);
+}
+</script>
 </body>
 </html>
