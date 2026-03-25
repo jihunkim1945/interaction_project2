@@ -13,13 +13,19 @@ body, html {
   font-family: 'Courier New', monospace;
 }
 
-/* ── Matrix canvas — full background ── */
-#matrix-canvas {
+/* ── Spline canvas — full background ── */
+#spline-canvas {
   position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100% !important;
+  height: 100% !important;
   z-index: 0;
+}
+
+/* ── Hide Spline watermark ── */
+#red-page ~ div,
+body > div:not(#red-page) {
+  display: none !important;
 }
 
 /* ── Nodes container ── */
@@ -30,7 +36,6 @@ body, html {
   pointer-events: none;
 }
 
-/* ── Individual node ── */
 .red-node {
   position: absolute;
   width: 210px;
@@ -46,7 +51,7 @@ body, html {
 
 .node-shell {
   border: 1px solid rgba(0,255,65,0.35);
-  background: rgba(0,0,0,0.72);
+  background: rgba(0,0,0,0.75);
   backdrop-filter: blur(6px);
   padding: 10px 12px;
   transition: border-color 0.3s;
@@ -73,7 +78,6 @@ body, html {
   line-height: 1.35;
 }
 
-/* ── Inputs ── */
 .red-input {
   width: 100%;
   background: transparent;
@@ -89,164 +93,87 @@ body, html {
 }
 
 .red-input:focus { border-color: #00ff41; }
-
-.red-input::placeholder {
-  color: rgba(0,255,65,0.22);
-  font-size: 10px;
-}
-
-.red-input[type="range"] {
-  border: none;
-  accent-color: #00ff41;
-  padding: 0; margin: 4px 0;
-  cursor: pointer;
-}
-
+.red-input::placeholder { color: rgba(0,255,65,0.22); font-size: 10px; }
+.red-input[type="range"] { border: none; accent-color: #00ff41; padding: 0; margin: 4px 0; cursor: pointer; }
 .red-input[type="radio"],
-.red-input[type="checkbox"] {
-  accent-color: #00ff41;
-  border: none; padding: 0;
-  cursor: pointer; width: auto;
-}
-
-.red-input[type="file"] {
-  font-size: 9px;
-  color: rgba(0,255,65,0.45);
-  border: none; cursor: pointer; padding: 0;
-}
-
+.red-input[type="checkbox"] { accent-color: #00ff41; border: none; padding: 0; cursor: pointer; width: auto; }
+.red-input[type="file"] { font-size: 9px; color: rgba(0,255,65,0.45); border: none; cursor: pointer; padding: 0; }
 .red-input[type="date"] { color-scheme: dark; }
 
 .red-btn {
   border: 1px solid rgba(0,255,65,0.35);
-  padding: 6px;
-  text-align: center;
-  letter-spacing: 0.2em;
-  cursor: pointer;
-  margin-top: 4px;
+  padding: 6px; text-align: center;
+  letter-spacing: 0.2em; cursor: pointer; margin-top: 4px;
   transition: border-color 0.2s, background 0.2s;
 }
-
-.red-btn:hover {
-  border-color: #00ff41;
-  background: rgba(0,255,65,0.07);
-}
+.red-btn:hover { border-color: #00ff41; background: rgba(0,255,65,0.07); }
 
 .red-radio-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 4px;
-  font-size: 10px;
-  color: #00ff41;
+  display: flex; align-items: center;
+  gap: 6px; margin-bottom: 4px;
+  font-size: 10px; color: #00ff41;
 }
 
 .node-response {
-  font-size: 9px;
-  color: #ff3333;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  margin-top: 6px;
-  opacity: 0;
-  transition: opacity 0.3s;
-  line-height: 1.5;
-  min-height: 13px;
+  font-size: 9px; color: #ff3333;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  margin-top: 6px; opacity: 0;
+  transition: opacity 0.3s; line-height: 1.5; min-height: 13px;
 }
-
 .node-response.show  { opacity: 1; }
 .node-response.green { color: #00ff41; }
 
 /* ── Zoom overlay ── */
 #zoom-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0,0,0,0.93);
-  padding: 20px;
+  position: fixed; inset: 0; z-index: 100;
+  display: none; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.93); padding: 20px;
 }
-
 #zoom-overlay.active { display: flex; }
 
 #zoomed-node {
   border: 1px solid #00ff41;
   background: rgba(0,0,0,0.97);
-  padding: 32px;
-  max-width: 480px;
-  width: 100%;
-  position: relative;
+  padding: 32px; max-width: 480px; width: 100%; position: relative;
 }
 
 .zoom-close {
-  position: absolute;
-  top: 12px; right: 12px;
-  color: rgba(0,255,65,0.45);
-  font-family: 'Courier New', monospace;
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  cursor: pointer;
-  text-transform: uppercase;
-  background: none;
-  border: none;
-  transition: color 0.2s;
+  position: absolute; top: 12px; right: 12px;
+  color: rgba(0,255,65,0.45); font-family: 'Courier New', monospace;
+  font-size: 10px; letter-spacing: 0.2em; cursor: pointer;
+  text-transform: uppercase; background: none; border: none; transition: color 0.2s;
 }
-
 .zoom-close:hover { color: #00ff41; }
-
 #zoomed-node .node-label { font-size: 13px; margin-bottom: 14px; }
 #zoomed-node .red-input  { font-size: 13px; padding: 8px 2px; }
 #zoomed-node .node-response { font-size: 11px; }
-
 #escape-yes-row { transition: transform 0.15s ease; }
 
-/* ── White collapse scene ── */
+/* ── White scene ── */
 #white-scene {
-  position: fixed;
-  inset: 0;
-  z-index: 200;
-  background: #fff;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 32px;
-  padding: 40px;
-  text-align: center;
+  position: fixed; inset: 0; z-index: 200;
+  background: #fff; display: none;
+  flex-direction: column; align-items: center; justify-content: center;
+  gap: 32px; padding: 40px; text-align: center;
 }
-
 #white-scene.active { display: flex; }
 
 .white-scene-title {
   font-family: 'Courier New', monospace;
   font-size: clamp(16px, 2.8vw, 24px);
-  color: #000;
-  letter-spacing: 0.08em;
-  line-height: 1.7;
+  color: #000; letter-spacing: 0.08em; line-height: 1.7;
 }
-
 .white-scene-sub {
   font-family: 'Courier New', monospace;
   font-size: clamp(11px, 1.4vw, 13px);
-  color: #555;
-  letter-spacing: 0.12em;
-  line-height: 2;
+  color: #555; letter-spacing: 0.12em; line-height: 2;
 }
-
 #btn-yes {
   font-family: 'Arial Black', Arial, sans-serif;
-  font-size: 14px;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: #000;
-  background: transparent;
-  border: 2px solid #000;
-  padding: 14px 48px;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  font-size: 14px; letter-spacing: 0.3em; text-transform: uppercase;
+  color: #000; background: transparent; border: 2px solid #000;
+  padding: 14px 48px; cursor: pointer; transition: background 0.2s, color 0.2s;
 }
-
 #btn-yes:hover { background: #000; color: #fff; }
 
 /* ── Animations ── */
@@ -257,13 +184,10 @@ body, html {
   60% { transform: translateX(-5px); }
   80% { transform: translateX(5px); }
 }
-
 @keyframes glitchFlicker {
   0%,100% { opacity: 1; }
   25% { opacity: 0.7; filter: hue-rotate(90deg); }
-  50% { opacity: 1; }
   75% { opacity: 0.85; filter: hue-rotate(-90deg); }
 }
-
 .screen-shake   { animation: screenShake 0.4s ease; }
 .glitch-flicker { animation: glitchFlicker 0.3s ease 2; }
