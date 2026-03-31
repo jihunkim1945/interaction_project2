@@ -197,7 +197,7 @@
 
   <div id="network-container">
     <div class="red-node" id="rnode-1"><div class="node-shell"><div class="node-id">NODE 14/25 — TYPE:TEXT</div><div class="node-label">ENTER YOUR NAME</div><div class="node-hint">[ CLICK TO INTERACT ]</div></div></div>
-    <div class="red-node" id="rnode-2"><div class="node-shell"><div class="node-id">NODE 15/25 — TYPE:PASSWORD</div><div class="node-label">ENTER SECRET</div><div class="node-hint">[ CLICK TO INTERACT ]</div></div></div>
+    <div class="red-node" id="rnode-2"><div class="node-shell"><div class="node-id">NODE 15/25 — TYPE:PASSWORD</div><div class="node-label">SECRET</div><div class="node-hint">[ CLICK TO INTERACT ]</div></div></div>
     <div class="red-node" id="rnode-3"><div class="node-shell"><div class="node-id">NODE 16/25 — TYPE:RADIO</div><div class="node-label">CHOOSE WHO YOU ARE</div><div class="node-hint">[ CLICK TO INTERACT ]</div></div></div>
     <div class="red-node" id="rnode-4"><div class="node-shell"><div class="node-id">NODE 17/25 — TYPE:NUMBER</div><div class="node-label">ENTER YOUR AGE</div><div class="node-hint">[ CLICK TO INTERACT ]</div></div></div>
     <div class="red-node" id="rnode-5"><div class="node-shell"><div class="node-id">NODE 18/25 — TYPE:CHECKBOX</div><div class="node-label">ARE YOU FREE?</div><div class="node-hint">[ CLICK TO INTERACT ]</div></div></div>
@@ -447,7 +447,8 @@ function bindInteractions(r) {
     x.addEventListener('change', () => {
       const res = r.querySelector('#r-identity-res');
       /* Brief shake/flash */
-     flashPage('hack-effect', 600);
+      flashPage('screen-shake', 400);
+      setTimeout(() => flashPage('red-flash', 600), 100);
       /* Force to DATA after effect */
       setTimeout(() => {
         r.querySelectorAll('input[name="r-identity"]').forEach(rb => rb.checked = false);
