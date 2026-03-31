@@ -4,202 +4,668 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>RED PILL — System Dissolution</title>
-  <link rel="stylesheet" href="css/global.css" />
-  <link rel="stylesheet" href="css/red.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body, html { width: 100%; height: 100%; background: #000; overflow: hidden; }
+    #red-page { position: fixed; inset: 0; background: #000; font-family: 'Courier New', monospace; }
+
+    #spline-canvas { position: fixed; top: 0; left: 0; width: 100% !important; height: 100% !important; z-index: 0; }
+
+    /* ── Crack zone ── */
+    #crack-zone { position: fixed; bottom: 0; right: 0; width: 300px; height: 100px; z-index: 9998; pointer-events: auto; }
+    .crack-shard { position: absolute; background: #000; }
+    .s1 { bottom: 0;    right: 0; width: 300px; height: 30px; transform: skewX(-8deg) translateX(12px); }
+    .s2 { bottom: 22px; right: 0; width: 240px; height: 22px; transform: skewX(6deg); }
+    .s3 { bottom: 38px; right: 0; width: 190px; height: 20px; transform: skewX(-13deg) translateX(8px); }
+    .s4 { bottom: 54px; right: 0; width: 145px; height: 18px; transform: skewX(10deg); }
+    .s5 { bottom: 67px; right: 0; width: 100px; height: 16px; transform: skewX(-7deg); }
+    .s6 { bottom: 78px; right: 0; width:  65px; height: 14px; transform: skewX(15deg) translateX(-5px); }
+    #escape-btn {
+      position: absolute; bottom: 32px; right: 18px;
+      font-family: 'Courier New', monospace; font-size: 10px;
+      letter-spacing: 0.25em; text-transform: uppercase;
+      color: rgba(0,255,65,0.6); background: transparent;
+      border: none; cursor: pointer; z-index: 9999;
+      transition: color 0.2s, text-shadow 0.2s;
+    }
+    #escape-btn:hover { color: #00ff41; text-shadow: 0 0 8px #00ff41; }
+
+    /* ── Intro ── */
+    #glitch-intro {
+      position: fixed; inset: 0; z-index: 10;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.8); opacity: 0; transition: opacity 0.5s; pointer-events: none;
+    }
+    #glitch-intro.show { opacity: 1; }
+    #intro-text {
+      font-family: 'Courier New', monospace; font-size: clamp(18px,3.5vw,44px);
+      color: #00ff41; letter-spacing: 0.08em; text-align: center;
+      line-height: 1.6; text-transform: uppercase;
+      animation: hardFlicker 0.25s steps(1) infinite;
+    }
+    @keyframes hardFlicker {
+      0%{opacity:1} 10%{opacity:0} 12%{opacity:1} 30%{opacity:1} 32%{opacity:0} 33%{opacity:1}
+      60%{opacity:1} 61%{opacity:0} 62%{opacity:0.4} 63%{opacity:1}
+      80%{opacity:1} 81%{opacity:0} 82%{opacity:1}
+      90%{opacity:1} 91%{opacity:0} 92%{opacity:0.6} 93%{opacity:0} 94%{opacity:1} 100%{opacity:1}
+    }
+
+    /* ── Explore hint ── */
+    #explore-hint {
+      position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+      z-index: 10; font-family: 'Courier New', monospace; font-size: 11px;
+      color: rgba(0,255,65,0.35); letter-spacing: 0.4em; text-transform: lowercase;
+      opacity: 0; transition: opacity 1s ease; pointer-events: none;
+    }
+    #explore-hint.show { opacity: 1; }
+
+    /* ── Network ── */
+    #network-container { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity 1s; }
+    #network-container.show { opacity: 1; }
+    .red-node { position: absolute; width: 200px; transform: translate(-50%,-50%); pointer-events: auto; cursor: pointer; will-change: left,top; }
+    .red-node:hover { animation: nodeShake 0.1s infinite; filter: drop-shadow(0 0 8px #00ff41); z-index: 20; }
+    @keyframes nodeShake {
+      0%{transform:translate(-50%,-50%) translate(0,0)} 25%{transform:translate(-50%,-50%) translate(-4px,1px)}
+      50%{transform:translate(-50%,-50%) translate(4px,-1px)} 75%{transform:translate(-50%,-50%) translate(-2px,2px)}
+      100%{transform:translate(-50%,-50%) translate(0,0)}
+    }
+    .node-shell { border: 1px solid rgba(0,255,65,0.3); background: rgba(0,0,0,0.72); padding: 10px 12px; transition: border-color 0.2s; }
+    .red-node:hover .node-shell { border-color: #00ff41; }
+    .node-id    { font-size: 8px; color: rgba(0,255,65,0.4); letter-spacing: 0.18em; margin-bottom: 4px; text-transform: uppercase; }
+    .node-label { font-size: 10px; color: #00ff41; letter-spacing: 0.08em; margin-bottom: 4px; text-transform: uppercase; line-height: 1.35; }
+    .node-hint  { font-size: 9px; color: rgba(0,255,65,0.35); letter-spacing: 0.1em; text-transform: uppercase; }
+
+    /* ── Overlay ── */
+    #node-overlay { position: fixed; inset: 0; z-index: 50; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.25); padding: 20px; }
+    #node-overlay.active { display: flex; }
+    #node-expanded { border: 1px solid #00ff41; background: rgba(0,0,0,0.82); padding: 36px; max-width: 500px; width: 100%; position: relative; }
+    .overlay-close { position: absolute; top: 14px; right: 14px; color: rgba(0,255,65,0.5); font-family: 'Courier New', monospace; font-size: 10px; letter-spacing: 0.2em; cursor: pointer; text-transform: uppercase; background: none; border: none; transition: color 0.2s; }
+    .overlay-close:hover { color: #00ff41; }
+    .exp-id    { font-size: 10px; color: rgba(0,255,65,0.4); letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 10px; }
+    .exp-label { font-size: 18px; color: #00ff41; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 24px; line-height: 1.4; }
+
+    .red-input { width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(0,255,65,0.4); color: #00ff41; font-family: 'Courier New', monospace; font-size: 15px; padding: 8px 2px; outline: none; letter-spacing: 0.08em; transition: border-color 0.3s; }
+    .red-input:focus { border-color: #00ff41; }
+    .red-input::placeholder { color: rgba(0,255,65,0.22); }
+    .red-input[type="range"]    { border:none; accent-color:#00ff41; padding:0; margin:10px 0; cursor:pointer; }
+    .red-input[type="radio"],
+    .red-input[type="checkbox"] { accent-color:#00ff41; border:none; padding:0; cursor:pointer; width:auto; }
+    .red-input[type="file"]     { font-size:12px; color:rgba(0,255,65,0.5); border:none; cursor:pointer; padding:0; }
+    .red-input[type="date"]     { color-scheme:dark; }
+    .red-btn { border:1px solid rgba(0,255,65,0.4); padding:12px; text-align:center; letter-spacing:0.25em; cursor:pointer; margin-top:10px; width:100%; font-size:13px; transition:border-color 0.2s,background 0.2s; }
+    .red-btn:hover { border-color:#00ff41; background:rgba(0,255,65,0.06); }
+    .red-radio-row { display:flex; align-items:center; gap:10px; margin-bottom:8px; font-size:14px; color:#00ff41; }
+    .node-response { font-size:11px; color:#ff3333; letter-spacing:0.12em; text-transform:uppercase; margin-top:14px; opacity:0; transition:opacity 0.3s; line-height:1.6; min-height:16px; }
+    .node-response.show  { opacity:1; }
+    .node-response.green { color:#00ff41; }
+    #escape-yes-row { transition: transform 0.15s ease; }
+
+    /* ── Age glitch display ── */
+    .age-glitch {
+      font-family: 'Courier New', monospace;
+      font-size: 22px; color: #00ff41;
+      letter-spacing: 0.1em; margin-top: 8px;
+      min-height: 30px;
+    }
+
+    /* ── Error modal (date) ── */
+    #error-modal {
+      position: fixed; inset: 0; z-index: 300;
+      display: none; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.95);
+    }
+    #error-modal.active { display: flex; }
+    #error-box {
+      border: 1px solid #ff3333; background: #000;
+      padding: 32px; max-width: 400px; width: 100%;
+      text-align: center;
+    }
+    .error-title {
+      font-family: 'Courier New', monospace; font-size: 11px;
+      color: #ff3333; letter-spacing: 0.2em; text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .error-msg {
+      font-family: 'Courier New', monospace; font-size: 18px;
+      color: #fff; letter-spacing: 0.06em; text-transform: uppercase;
+      line-height: 1.6; margin-bottom: 24px;
+    }
+    .error-close {
+      font-family: 'Courier New', monospace; font-size: 10px;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: rgba(255,255,255,0.4); background: none; border: 1px solid rgba(255,255,255,0.2);
+      padding: 8px 20px; cursor: pointer; transition: all 0.2s;
+    }
+    .error-close:hover { color: #fff; border-color: #fff; }
+
+    /* ── White scene ── */
+    #white-scene { position:fixed; inset:0; z-index:200; background:#fff; display:none; flex-direction:column; align-items:center; justify-content:center; gap:32px; padding:40px; text-align:center; }
+    #white-scene.active { display:flex; }
+    .white-scene-title { font-family:'Courier New',monospace; font-size:clamp(16px,2.8vw,24px); color:#000; letter-spacing:0.08em; line-height:1.7; }
+    .white-scene-sub   { font-family:'Courier New',monospace; font-size:clamp(11px,1.4vw,13px); color:#555; letter-spacing:0.12em; line-height:2; }
+    #btn-yes { font-family:'Arial Black',Arial,sans-serif; font-size:14px; letter-spacing:0.3em; text-transform:uppercase; color:#000; background:transparent; border:2px solid #000; padding:14px 48px; cursor:pointer; transition:background 0.2s,color 0.2s; }
+    #btn-yes:hover { background:#000; color:#fff; }
+
+    /* ── Global glitch effects ── */
+    @keyframes screenShake {
+      0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)}
+      40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)}
+    }
+    @keyframes redFlash {
+      0%{filter:invert(1) hue-rotate(90deg) brightness(2)}
+      20%{filter:invert(0)}
+      40%{filter:invert(1) hue-rotate(180deg) brightness(1.5)}
+      60%{filter:invert(0)}
+      80%{filter:invert(1) hue-rotate(270deg) brightness(2)}
+      100%{filter:invert(0)}
+    }
+    @keyframes hackEffect {
+      0%{filter:hue-rotate(0deg) saturate(1)}
+      10%{filter:hue-rotate(180deg) saturate(3) brightness(2)}
+      20%{filter:hue-rotate(0deg) saturate(1)}
+      30%{filter:hue-rotate(90deg) saturate(5) brightness(0.5) invert(1)}
+      40%{filter:hue-rotate(0deg) saturate(1) invert(0)}
+      50%{filter:brightness(3) contrast(2)}
+      60%{filter:hue-rotate(0deg) saturate(1) brightness(1)}
+      70%{filter:hue-rotate(270deg) brightness(2) invert(1)}
+      80%{filter:invert(0) brightness(1)}
+      90%{filter:hue-rotate(180deg) saturate(2)}
+      100%{filter:hue-rotate(0deg) saturate(1) brightness(1)}
+    }
+    .screen-shake   { animation: screenShake 0.4s ease; }
+    .red-flash      { animation: redFlash 0.6s ease; }
+    .hack-effect    { animation: hackEffect 1.2s ease; }
+  </style>
 </head>
 <body>
-  <div id="red-page">
+<div id="red-page">
 
-    <a href="index.html" class="nav-back green">← EXIT</a>
+  <canvas id="spline-canvas"></canvas>
 
-    <!-- Matrix rain (populated by JS) -->
-    <div id="matrix-rain"></div>
+  <div id="crack-zone">
+    <div class="crack-shard s1"></div><div class="crack-shard s2"></div>
+    <div class="crack-shard s3"></div><div class="crack-shard s4"></div>
+    <div class="crack-shard s5"></div><div class="crack-shard s6"></div>
+    <button id="escape-btn">[ ESCAPE ]</button>
+  </div>
 
-    <!-- SVG connector lines (built by JS) -->
-    <svg id="network-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+  <div id="glitch-intro">
+    <div id="intro-text">Are you sure you exist?<br/>answer me.</div>
+  </div>
 
-    <!-- ── Network nodes ── -->
-    <div id="network-container">
+  <div id="explore-hint">explore.</div>
 
-      <!-- NODE 01: Name -->
-      <div class="red-node" id="rnode-1">
-        <div class="node-shell">
-          <div class="node-id">NODE 14/25 — TYPE:TEXT</div>
-          <div class="node-label">ENTER YOUR NAME</div>
-          <!-- INPUT INSTANCE 14 / 25 -->
-          <input type="text" class="red-input" id="r-name"
-                 placeholder="name..." autocomplete="off" />
-          <div class="node-response" id="r-name-res"></div>
-        </div>
-      </div>
+  <div id="network-container">
+    <div class="red-node" id="rnode-1"><div class="node-shell"><div class="node-id">NODE 14/25 — TYPE:TEXT</div><div class="node-label">ENTER YOUR NAME</div><div class="node-hint">[ CLICK TO INTERACT ]</div></div></div>
+    <div class="red-node" id="rnode-2"><div class="node-shell"><div class="node-id">NODE 15/25 — TYPE:PASSWORD</div><div class="node-label">ENTER SECRET</div><div class="node-hint">[ CLICK TO INTERACT ]</div></div></div>
+    <div class="red-node" id="rnode-3"><div class="node-shell"><div class="node-id">NODE 16/25 — TYPE:RADIO</div><div class="node-label">CHOOSE WHO YOU ARE</div><div class="node-hint">[ CLICK TO INTERACT ]</div></div></div>
+    <div class="red-node" id="rnode-4"><div class="node-shell"><div class="node-id">NODE 17/25 — TYPE:NUMBER</div><div class="node-label">ENTER YOUR AGE</div><div class="node-hint">[ CLICK TO INTERACT ]</div></div></div>
+    <div class="red-node" id="rnode-5"><div class="node-shell"><div class="node-id">NODE 18/25 — TYPE:CHECKBOX</div><div class="node-label">ARE YOU FREE?</div><div class="node-hint">[ CLICK TO INTERACT ]</div></div></div>
+    <div class="red-node" id="rnode-6"><div class="node-shell"><div class="node-id">NODE 19/25 — TYPE:SEARCH</div><div class="node-label">SEARCH YOUR WORLD</div><div class="node-hint">[ CLICK TO INTERACT ]</div></div></div>
+    <div class="red-node" id="rnode-7"><div class="node-shell"><div class="node-id">NODE 20/25 — TYPE:FILE</div><div class="node-label">UPLOAD YOUR MEMORY</div><div class="node-hint">[ CLICK TO INTERACT ]</div></div></div>
+    <div class="red-node" id="rnode-8"><div class="node-shell"><div class="node-id">NODE 21/25 — TYPE:DATE</div><div class="node-label">WHEN WERE YOU BORN?</div><div class="node-hint">[ CLICK TO INTERACT ]</div></div></div>
+    <div class="red-node" id="rnode-9"><div class="node-shell"><div class="node-id">NODE 22/25 — TYPE:RANGE</div><div class="node-label">BASELINE STABILITY TEST</div><div class="node-hint">[ CLICK TO INTERACT ]</div></div></div>
+    <div class="red-node" id="rnode-10"><div class="node-shell"><div class="node-id">NODE 23/25 — TYPE:RADIO</div><div class="node-label">DO YOU WANT TO ESCAPE?</div><div class="node-hint">[ CLICK TO INTERACT ]</div></div></div>
+    <div class="red-node" id="rnode-11"><div class="node-shell"><div class="node-id">NODE 24/25 — TYPE:TEXT</div><div class="node-label">DO YOU KNOW THE ABSURDITY OF THE WORLD?</div><div class="node-hint">[ CLICK TO INTERACT ]</div></div></div>
+    <div class="red-node" id="rnode-12"><div class="node-shell"><div class="node-id">NODE 25/25 — TYPE:BUTTON</div><div class="node-label">INITIATE COLLAPSE SEQUENCE</div><div class="node-hint">[ CLICK TO INTERACT ]</div></div></div>
+  </div>
 
-      <!-- NODE 02: Memory / Password -->
-      <div class="red-node" id="rnode-2">
-        <div class="node-shell">
-          <div class="node-id">NODE 15/25 — TYPE:PASSWORD</div>
-          <div class="node-label">ENTER A MEMORY YOU BELIEVE IS REAL</div>
-          <!-- INPUT INSTANCE 15 / 25 -->
-          <input type="password" class="red-input" id="r-memory"
-                 placeholder="memory..." autocomplete="off" />
-          <div class="node-response" id="r-memory-res"></div>
-        </div>
-      </div>
-
-      <!-- NODE 03: Identity Selection -->
-      <div class="red-node" id="rnode-3">
-        <div class="node-shell">
-          <div class="node-id">NODE 16/25 — TYPE:RADIO</div>
-          <div class="node-label">CHOOSE WHO YOU ARE</div>
-          <!-- INPUT INSTANCE 16 / 25 -->
-          <div class="red-radio-row"><input type="radio" class="red-input" name="r-identity" value="human"   /> human</div>
-          <div class="red-radio-row"><input type="radio" class="red-input" name="r-identity" value="citizen" /> citizen</div>
-          <div class="red-radio-row"><input type="radio" class="red-input" name="r-identity" value="user"    /> user</div>
-          <div class="red-radio-row"><input type="radio" class="red-input" name="r-identity" value="data"    /> data</div>
-          <div class="node-response" id="r-identity-res"></div>
-        </div>
-      </div>
-
-      <!-- NODE 04: Age / Number Glitch -->
-      <div class="red-node" id="rnode-4">
-        <div class="node-shell">
-          <div class="node-id">NODE 17/25 — TYPE:NUMBER</div>
-          <div class="node-label">ENTER YOUR AGE</div>
-          <!-- INPUT INSTANCE 17 / 25 -->
-          <input type="number" class="red-input" id="r-age"
-                 placeholder="age..." min="0" max="999" />
-          <div class="node-response" id="r-age-res"></div>
-        </div>
-      </div>
-
-      <!-- NODE 05: Freedom Check -->
-      <div class="red-node" id="rnode-5">
-        <div class="node-shell">
-          <div class="node-id">NODE 18/25 — TYPE:CHECKBOX</div>
-          <div class="node-label">ARE YOU FREE?</div>
-          <!-- INPUT INSTANCE 18 / 25 -->
-          <div class="red-radio-row" style="margin-top:4px;">
-            <input type="checkbox" class="red-input" id="r-free" />
-            <span style="font-size:10px; color:var(--matrix-green); margin-left:6px;">
-              I AM FREE
-            </span>
-          </div>
-          <div class="node-response" id="r-free-res"></div>
-        </div>
-      </div>
-
-      <!-- NODE 06: Search Your World -->
-      <div class="red-node" id="rnode-6">
-        <div class="node-shell">
-          <div class="node-id">NODE 19/25 — TYPE:SEARCH</div>
-          <div class="node-label">SEARCH YOUR WORLD</div>
-          <!-- INPUT INSTANCE 19 / 25 -->
-          <input type="search" class="red-input" id="r-search"
-                 placeholder="query..." autocomplete="off" />
-          <div class="node-response" id="r-search-res"></div>
-        </div>
-      </div>
-
-      <!-- NODE 07: Upload Memory -->
-      <div class="red-node" id="rnode-7">
-        <div class="node-shell">
-          <div class="node-id">NODE 20/25 — TYPE:FILE</div>
-          <div class="node-label">UPLOAD YOUR MEMORY</div>
-          <!-- INPUT INSTANCE 20 / 25 -->
-          <input type="file" class="red-input" id="r-file" />
-          <div class="node-response" id="r-file-res"></div>
-        </div>
-      </div>
-
-      <!-- NODE 08: Date of Birth -->
-      <div class="red-node" id="rnode-8">
-        <div class="node-shell">
-          <div class="node-id">NODE 21/25 — TYPE:DATE</div>
-          <div class="node-label">WHEN WERE YOU BORN?</div>
-          <!-- INPUT INSTANCE 21 / 25 -->
-          <input type="date" class="red-input" id="r-dob" />
-          <div class="node-response" id="r-dob-res"></div>
-        </div>
-      </div>
-
-      <!-- NODE 09: Baseline Test -->
-      <div class="red-node" id="rnode-9">
-        <div class="node-shell">
-          <div class="node-id">NODE 22/25 — TYPE:RANGE</div>
-          <div class="node-label">BASELINE STABILITY TEST</div>
-          <!-- INPUT INSTANCE 22 / 25 -->
-          <input type="range" class="red-input" id="r-range"
-                 min="0" max="100" value="50" />
-          <div class="node-response" id="r-range-res"></div>
-        </div>
-      </div>
-
-      <!-- NODE 10: Escape Attempt -->
-      <div class="red-node" id="rnode-10">
-        <div class="node-shell">
-          <div class="node-id">NODE 23/25 — TYPE:RADIO</div>
-          <div class="node-label">DO YOU WANT TO ESCAPE THE SYSTEM?</div>
-          <!-- INPUT INSTANCE 23 / 25 -->
-          <div class="red-radio-row" id="escape-yes-row">
-            <input type="radio" class="red-input" name="r-escape"
-                   value="yes" id="r-escape-yes" /> yes
-          </div>
-          <div class="red-radio-row">
-            <input type="radio" class="red-input" name="r-escape"
-                   value="no" id="r-escape-no" /> no
-          </div>
-          <div class="node-response" id="r-escape-res"></div>
-        </div>
-      </div>
-
-      <!-- NODE 11: Final Truth -->
-      <div class="red-node" id="rnode-11">
-        <div class="node-shell">
-          <div class="node-id">NODE 24/25 — TYPE:TEXT</div>
-          <div class="node-label">WHAT DO YOU KNOW NOW?</div>
-          <!-- INPUT INSTANCE 24 / 25 -->
-          <input type="text" class="red-input" id="r-truth"
-                 placeholder="nothing is real..." autocomplete="off" />
-          <div class="node-response" id="r-truth-res"></div>
-        </div>
-      </div>
-
-      <!-- NODE 12: Collapse Button -->
-      <div class="red-node" id="rnode-12">
-        <div class="node-shell">
-          <div class="node-id">NODE 25/25 — TYPE:BUTTON</div>
-          <div class="node-label">INITIATE COLLAPSE SEQUENCE</div>
-          <!-- INPUT INSTANCE 25 / 25 -->
-          <input type="button" class="red-input" id="r-collapse" value="COLLAPSE" />
-          <div class="node-response" id="r-collapse-res"></div>
-        </div>
-      </div>
-
-    </div><!-- /#network-container -->
-
-    <!-- ── Zoom overlay ── -->
-    <div id="zoom-overlay">
-      <div id="zoomed-node">
-        <button class="zoom-close" id="zoom-close">[ CLOSE ]</button>
-        <div id="zoomed-content"></div>
-      </div>
+  <div id="node-overlay">
+    <div id="node-expanded">
+      <button class="overlay-close" id="overlay-close">[ CLOSE ]</button>
+      <div id="node-content"></div>
     </div>
+  </div>
 
-    <!-- ── White collapse scene ── -->
-    <div id="white-scene">
-      <div class="white-scene-title">
-        You have reached the truth.
-      </div>
-      <div class="white-scene-sub">
-        Reality is irrational. Meaning is uncertain.<br/>
-        Knowing the absurdity of the world,<br/>
-        will you continue to live?
-      </div>
-      <input type="button" id="btn-yes" value="YES"
-             onclick="window.location.href='index.html'" />
+  <!-- Date error modal -->
+  <div id="error-modal">
+    <div id="error-box">
+      <div class="error-title">⚠ SYSTEM ERROR 0x0000</div>
+      <div class="error-msg">YOU WERE<br/>NEVER BORN.</div>
+      <button class="error-close" id="error-close">[ DISMISS ]</button>
     </div>
+  </div>
 
-  </div><!-- /#red-page -->
+  <div id="white-scene">
+    <div class="white-scene-title">You have reached the truth.</div>
+    <div class="white-scene-sub">Reality is irrational. Meaning is uncertain.<br/>Knowing the absurdity of the world,<br/>will you continue to live?</div>
+    <input type="button" id="btn-yes" value="YES" onclick="location.href='index.html'" />
+  </div>
+</div>
 
-  <script src="js/red.js"></script>
+<script type="module">
+let Application;
+try {
+  ({ Application } = await import('https://unpkg.com/@splinetool/runtime/build/runtime.js'));
+} catch(e) {
+  ({ Application } = await import('https://cdn.jsdelivr.net/npm/@splinetool/runtime/build/runtime.js'));
+}
+
+const R = (a,b) => Math.random()*(b-a)+a;
+const D = (fn,ms) => { let t; return (...a) => { clearTimeout(t); t=setTimeout(()=>fn(...a),ms); }; };
+
+/* Spline */
+const cvs = document.getElementById('spline-canvas');
+const app = new Application(cvs);
+app.load('https://prod.spline.design/5iDn8kJog7o5wvBI/scene.splinecode').catch(e=>console.warn(e));
+
+document.getElementById('escape-btn').addEventListener('click', () => location.href='index.html');
+
+/* ── Page glitch helper ── */
+const page = document.getElementById('red-page');
+function flashPage(cls, duration) {
+  page.classList.add(cls);
+  setTimeout(() => page.classList.remove(cls), duration);
+}
+
+/* ── Intro sequence ── */
+const introEl   = document.getElementById('glitch-intro');
+const exploreEl = document.getElementById('explore-hint');
+const netEl     = document.getElementById('network-container');
+let dead = false;
+
+setTimeout(() => introEl.classList.add('show'), 400);
+setTimeout(() => {
+  introEl.style.transition = 'opacity 0.6s';
+  introEl.style.opacity = '0';
+  setTimeout(() => {
+    introEl.style.display = 'none';
+    exploreEl.classList.add('show');
+  }, 600);
+}, 4000);
+setTimeout(() => {
+  exploreEl.style.transition = 'opacity 0.8s';
+  exploreEl.style.opacity = '0';
+  setTimeout(() => {
+    exploreEl.style.display = 'none';
+    netEl.classList.add('show');
+    startNodes();
+  }, 800);
+}, 7600);
+
+/* ── Nodes ── */
+const nodeEls  = [...document.querySelectorAll('.red-node')];
+const nodeData = [];
+
+function startNodes() {
+  const W=innerWidth, H=innerHeight, placed=[];
+  nodeEls.forEach(el => {
+    let x,y,ok,n=0;
+    do {
+      x=R(120,W-120); y=R(60,H-60);
+      ok=placed.every(p=>Math.hypot(x-p.x,y-p.y)>200); n++;
+    } while(!ok&&n<600);
+    const speed=R(1.0,2.5), angle=R(0,Math.PI*2);
+    const d={el,x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,jitter:Math.floor(R(40,120))};
+    placed.push({x,y}); nodeData.push(d);
+    el.style.left=x+'px'; el.style.top=y+'px';
+  });
+  (function move(){
+    if(dead) return;
+    const W=innerWidth, H=innerHeight;
+    nodeData.forEach(d=>{
+      d.jitter--;
+      if(d.jitter<=0){
+        const s=R(0.8,2.5),a=R(0,Math.PI*2);
+        d.vx=Math.cos(a)*s; d.vy=Math.sin(a)*s;
+        d.jitter=Math.floor(R(40,140));
+      }
+      d.x+=d.vx; d.y+=d.vy;
+      if(d.x<110)  {d.x=110;   d.vx= Math.abs(d.vx);}
+      if(d.x>W-110){d.x=W-110; d.vx=-Math.abs(d.vx);}
+      if(d.y<50)   {d.y=50;    d.vy= Math.abs(d.vy);}
+      if(d.y>H-50) {d.y=H-50;  d.vy=-Math.abs(d.vy);}
+      d.el.style.left=d.x+'px'; d.el.style.top=d.y+'px';
+    });
+    requestAnimationFrame(move);
+  })();
+}
+
+/* ── Overlay ── */
+const overlay     = document.getElementById('node-overlay');
+const nodeContent = document.getElementById('node-content');
+
+const CONTENTS = {
+  'rnode-1': {id:'NODE 14/25 — TYPE:TEXT', label:'ENTER YOUR NAME',
+    html:`<input type="text" class="red-input" id="r-name" placeholder="name..." autocomplete="off"/>
+          <div class="node-response" id="r-name-res"></div>`},
+
+  /* 1. SECRET password — hack effect on enter */
+  'rnode-2': {id:'NODE 15/25 — TYPE:PASSWORD', label:'SECRET',
+    html:`<input type="password" class="red-input" id="r-memory" placeholder="enter your secret..." autocomplete="off"/>
+          <div class="node-response" id="r-memory-res"></div>`},
+
+  /* 2. Identity radio — all forced to DATA */
+  'rnode-3': {id:'NODE 16/25 — TYPE:RADIO', label:'CHOOSE WHO YOU ARE',
+    html:`<div class="red-radio-row"><input type="radio" class="red-input" name="r-identity" value="human"/> human</div>
+          <div class="red-radio-row"><input type="radio" class="red-input" name="r-identity" value="citizen"/> citizen</div>
+          <div class="red-radio-row"><input type="radio" class="red-input" name="r-identity" value="user"/> user</div>
+          <div class="red-radio-row"><input type="radio" class="red-input" name="r-identity" value="data"/> data</div>
+          <div class="node-response" id="r-identity-res"></div>`},
+
+  /* 3. Age — brutal continuous glitch inside input */
+  'rnode-4': {id:'NODE 17/25 — TYPE:NUMBER', label:'ENTER YOUR AGE',
+    html:`<input type="number" class="red-input" id="r-age" placeholder="age..." min="0" max="999"/>
+          <div class="node-response" id="r-age-res"></div>`},
+
+  'rnode-5': {id:'NODE 18/25 — TYPE:CHECKBOX', label:'ARE YOU FREE?',
+    html:`<div class="red-radio-row" style="margin-top:8px;"><input type="checkbox" class="red-input" id="r-free"/>
+          <span style="font-size:14px;color:#00ff41;">I AM FREE</span></div>
+          <div class="node-response" id="r-free-res"></div>`},
+
+  /* 4. Search — AI headlines via Claude API */
+  'rnode-6': {id:'NODE 19/25 — TYPE:SEARCH', label:'SEARCH YOUR WORLD',
+    html:`<input type="search" class="red-input" id="r-search" placeholder="enter a place..." autocomplete="off"/>
+          <div class="node-response" id="r-search-res" style="font-size:10px;line-height:1.8;color:#ff3333;"></div>`},
+
+  'rnode-7': {id:'NODE 20/25 — TYPE:FILE', label:'UPLOAD YOUR MEMORY',
+    html:`<input type="file" class="red-input" id="r-file" style="margin-top:8px;"/>
+          <div class="node-response" id="r-file-res"></div>`},
+
+  /* 5. Date — error modal */
+  'rnode-8': {id:'NODE 21/25 — TYPE:DATE', label:'WHEN WERE YOU BORN?',
+    html:`<input type="date" class="red-input" id="r-dob"/>
+          <div class="node-response" id="r-dob-res"></div>`},
+
+  /* 6. Range — glitch intensity by value */
+  'rnode-9': {id:'NODE 22/25 — TYPE:RANGE', label:'BASELINE STABILITY TEST',
+    html:`<input type="range" class="red-input" id="r-range" min="0" max="100" value="0"/>
+          <div class="node-response" id="r-range-res"></div>`},
+
+  'rnode-10':{id:'NODE 23/25 — TYPE:RADIO', label:'DO YOU WANT TO ESCAPE THE SYSTEM?',
+    html:`<div class="red-radio-row" id="escape-yes-row"><input type="radio" class="red-input" name="r-escape" value="yes" id="r-escape-yes"/> yes</div>
+          <div class="red-radio-row"><input type="radio" class="red-input" name="r-escape" value="no"/> no</div>
+          <div class="node-response" id="r-escape-res"></div>`},
+  'rnode-11':{id:'NODE 24/25 — TYPE:TEXT', label:'DO YOU KNOW THE ABSURDITY OF THE WORLD AND WILL YOU CONTINUE TO LIVE?',
+    html:`<input type="text" class="red-input" id="r-truth" placeholder="yes / no" autocomplete="off"/>
+          <div class="node-response" id="r-truth-res"></div>`},
+  'rnode-12':{id:'NODE 25/25 — TYPE:BUTTON', label:'INITIATE COLLAPSE SEQUENCE',
+    html:`<input type="button" class="red-input red-btn" id="r-collapse" value="COLLAPSE"/>
+          <div class="node-response" id="r-collapse-res"></div>`},
+};
+
+function openNode(id) {
+  const c=CONTENTS[id]; if(!c) return;
+  nodeContent.innerHTML=`<div class="exp-id">${c.id}</div><div class="exp-label">${c.label}</div>${c.html}`;
+  overlay.classList.add('active');
+  bindInteractions(nodeContent);
+  const first=nodeContent.querySelector('input:not([type="radio"]):not([type="checkbox"]):not([type="button"]):not([type="range"])');
+  if(first) setTimeout(()=>first.focus(),50);
+}
+const closeNode = () => overlay.classList.remove('active');
+document.getElementById('overlay-close').addEventListener('click', closeNode);
+overlay.addEventListener('click', e => { if(e.target===overlay) closeNode(); });
+nodeEls.forEach(el => el.addEventListener('click', () => openNode(el.id)));
+
+/* ── Date error modal ── */
+document.getElementById('error-close').addEventListener('click', () => {
+  document.getElementById('error-modal').classList.remove('active');
+});
+
+/* ── Interactions ── */
+function bindInteractions(r) {
+  const g = id => r.querySelector(id);
+
+  /* Name */
+  const nm=g('#r-name'), nmR=g('#r-name-res');
+  if(nm) nm.addEventListener('change', () => {
+    if(!nm.value.trim()) return;
+    const c=nm.value.split('').map(x=>x.charCodeAt(0)).join('-');
+    nmR.textContent='IDENTITY ENCODED: '+c; nmR.classList.add('show'); nm.value=c;
+  });
+
+  /* 1. SECRET — hack effect on enter */
+  const mm=g('#r-memory'), mmR=g('#r-memory-res');
+  if(mm) {
+    mm.addEventListener('keydown', e => {
+      if(e.key !== 'Enter' || !mm.value) return;
+      const secret = mm.value;
+      /* Trigger hack effect on background */
+      flashPage('hack-effect', 1200);
+      /* Show exposed message after brief delay */
+      setTimeout(() => {
+        mm.type = 'text';
+        mm.value = secret;
+        mm.style.color = '#ff3333';
+        mm.style.borderColor = '#ff3333';
+        mmR.innerHTML = `DATA BREACH DETECTED<br/>SECRET EXPOSED: ${secret}`;
+        mmR.classList.add('show');
+      }, 400);
+      /* Restore after 2s */
+      setTimeout(() => {
+        mm.type = 'password';
+        mm.value = '';
+        mm.style.color = '';
+        mm.style.borderColor = '';
+        mmR.classList.remove('show');
+      }, 3000);
+    });
+  }
+
+  /* 2. Identity radio — glitch + force to DATA */
+  r.querySelectorAll('input[name="r-identity"]').forEach(x => {
+    x.addEventListener('change', () => {
+      const res = r.querySelector('#r-identity-res');
+      /* Brief shake/flash */
+     flashPage('hack-effect', 600);
+      /* Force to DATA after effect */
+      setTimeout(() => {
+        r.querySelectorAll('input[name="r-identity"]').forEach(rb => rb.checked = false);
+        const dataRadio = r.querySelector('input[value="data"]');
+        if(dataRadio) dataRadio.checked = true;
+        res.textContent = 'IDENTITY OVERRIDDEN — YOU ARE DATA';
+        res.classList.add('show');
+      }, 500);
+    });
+  });
+
+  /* 3. Age — brutal continuous glitch inside input */
+  const ag=g('#r-age'), agR=g('#r-age-res');
+  let ageGlitchInterval = null;
+  const GLITCH_CHARS = '0123456789!@#$%^&*░▒▓█∂∑∆';
+  if(ag) {
+    ag.addEventListener('input', () => {
+      if(ageGlitchInterval) clearInterval(ageGlitchInterval);
+      if(!ag.value) return;
+      const real = ag.value;
+      /* Brutal: randomly replace value with glitched number, never settle */
+      ageGlitchInterval = setInterval(() => {
+        const rand = Math.floor(Math.random() * 999);
+        const glitchStr = rand.toString().split('').map(c =>
+          Math.random() > 0.4 ? c : GLITCH_CHARS[Math.floor(Math.random()*GLITCH_CHARS.length)]
+        ).join('');
+        ag.value = glitchStr;
+        ag.style.color = Math.random() > 0.5 ? '#ff3333' : '#00ff41';
+        ag.style.letterSpacing = Math.random() > 0.7 ? '0.3em' : '0.08em';
+        /* Flash page brutally on some frames */
+        if(Math.random() > 0.85) {
+          page.style.filter = 'brightness(3) invert(1)';
+          setTimeout(() => { page.style.filter = ''; }, 60);
+        }
+      }, 60);
+      if(agR) { agR.textContent='AGE DATA CORRUPTED — UNRECOVERABLE'; agR.classList.add('show'); }
+    });
+    /* Stop glitch when field loses focus */
+    ag.addEventListener('blur', () => {
+      if(ageGlitchInterval) clearInterval(ageGlitchInterval);
+      ag.style.color = '';
+      ag.style.letterSpacing = '';
+    });
+  }
+
+  /* Freedom */
+  const fr=g('#r-free'), frR=g('#r-free-res');
+  if(fr) fr.addEventListener('change', () => {
+    if(!fr.checked) return;
+    frR.textContent='STATEMENT INVALID — FREEDOM UNVERIFIABLE';
+    frR.classList.add('show'); fr.checked=false;
+  });
+
+  /* 4. Search — AI headlines via Claude API */
+  const sr=g('#r-search'), srR=g('#r-search-res');
+  if(sr) {
+    sr.addEventListener('keydown', async e => {
+      if(e.key !== 'Enter' || !sr.value.trim()) return;
+      const place = sr.value.trim();
+      srR.textContent = 'INTERCEPTING...';
+      srR.classList.add('show');
+      try {
+        const res = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 300,
+            messages: [{
+              role: 'user',
+              content: `Generate 4 dystopian fake news headlines about "${place}" where AI and technology have caused societal collapse, surveillance, or human identity loss. Make them feel like real breaking news. Return ONLY the 4 headlines, one per line, no numbering, no explanation. Each headline should be under 12 words. Dark, unsettling tone.`
+            }]
+          })
+        });
+        const data = await res.json();
+        const text = data.content[0].text.trim();
+        const lines = text.split('\n').filter(l=>l.trim()).slice(0,4);
+        srR.innerHTML = lines.map(h=>`▸ ${h.trim()}`).join('<br/>');
+      } catch(err) {
+        const fallback = [
+          `▸ ${place.toUpperCase()}: AI SURVEILLANCE GRID GOES LIVE`,
+          `▸ ${place.toUpperCase()} RESIDENTS ASSIGNED DIGITAL IDENTITY SCORES`,
+          `▸ HUMAN MEMORY ARCHIVE IN ${place.toUpperCase()} CORRUPTED`,
+          `▸ ${place.toUpperCase()} DECLARED SIMULATION ZONE BY AUTHORITIES`,
+        ];
+        srR.innerHTML = fallback.join('<br/>');
+      }
+    });
+  }
+
+  /* File */
+  const fi=g('#r-file'), fiR=g('#r-file-res');
+  if(fi) fi.addEventListener('change', () => {
+    if(!fi.files.length) return;
+    setTimeout(()=>{ fiR.innerHTML='MEMORY FILE EMPTY<br/>YOU NEVER EXISTED'; fiR.classList.add('show'); fi.value=''; },600);
+  });
+
+  /* 5. Date — error modal */
+  const db=g('#r-dob'), dbR=g('#r-dob-res');
+  if(db) db.addEventListener('change', () => {
+    if(!db.value) return;
+    /* Flash + show modal */
+    flashPage('red-flash', 600);
+    setTimeout(() => {
+      document.getElementById('error-modal').classList.add('active');
+      db.value = '';
+    }, 300);
+  });
+
+  /* 6. Range — glitch intensity by value */
+  let rangeGlitchInterval = null;
+  const rn=g('#r-range'), rnR=g('#r-range-res');
+  if(rn) {
+    rn.addEventListener('input', D(() => {
+      const val = +rn.value;
+      const intensity = 1 - (val / 100); /* low val = high intensity */
+
+      if(rangeGlitchInterval) clearInterval(rangeGlitchInterval);
+
+      if(val >= 100) {
+        page.style.filter = '';
+        if(rnR) { rnR.classList.remove('show'); }
+        return;
+      }
+
+      if(rnR) {
+        rnR.textContent = val > 50
+          ? 'BASELINE FLUCTUATING...'
+          : val > 20
+          ? 'REALITY DESTABILIZING — ' + (100 - val) + '%'
+          : 'CRITICAL INSTABILITY — SYSTEM FAILING';
+        rnR.classList.add('show');
+      }
+
+      /* Continuous glitch that scales with intensity */
+      rangeGlitchInterval = setInterval(() => {
+        if(Math.random() < intensity) {
+          const hue = Math.floor(R(0, 360));
+          const bright = 1 + intensity * 2;
+          page.style.filter = `hue-rotate(${hue}deg) brightness(${bright}) ${intensity > 0.7 ? 'invert(1)' : ''}`;
+          setTimeout(() => { page.style.filter = ''; }, 80 + Math.random() * 80);
+        }
+      }, 150 - intensity * 100);
+
+      /* At min (0), maximum chaos */
+      if(val <= 0) {
+        if(rnR) rnR.textContent = '⚠ COMPLETE SYSTEM FAILURE';
+      }
+    }, 50));
+
+    /* Clean up on mouse release */
+    rn.addEventListener('mouseup', () => {
+      if(+rn.value > 0) {
+        if(rangeGlitchInterval) clearInterval(rangeGlitchInterval);
+        setTimeout(() => { page.style.filter = ''; }, 200);
+      }
+    });
+    rn.addEventListener('touchend', () => {
+      if(+rn.value > 0) {
+        if(rangeGlitchInterval) clearInterval(rangeGlitchInterval);
+        setTimeout(() => { page.style.filter = ''; }, 200);
+      }
+    });
+  }
+
+  /* Escape radio */
+  let ec=0;
+  const yr=g('#escape-yes-row'), yi=g('#r-escape-yes'), er=g('#r-escape-res');
+  if(yr){
+    const ev=e=>{
+      if(ec>=3)return; e.preventDefault(); e.stopPropagation();
+      yr.style.transform=`translate(${R(-100,100)}px,${R(-70,70)}px)`;
+      ec++; er.textContent=`ESCAPE ATTEMPT ${ec}/3 — ACCESS DENIED`; er.classList.add('show');
+      if(ec>=3){
+        setTimeout(()=>{ yr.style.transform=''; if(yi)yi.checked=true; er.innerHTML='ESCAPE ATTEMPT DETECTED<br/>ACCESS GRANTED'; setTimeout(triggerCollapse,1300); },700);
+      } else { setTimeout(()=>yr.style.transform='',600); }
+    };
+    yr.addEventListener('click',ev); yr.addEventListener('mousedown',ev);
+  }
+
+  const tr=g('#r-truth'), trR=g('#r-truth-res');
+  if(tr) tr.addEventListener('keydown', e => {
+    if(e.key !== 'Enter' || !tr.value.trim()) return;
+    const ans = tr.value.trim().toLowerCase();
+    if(ans === 'yes') {
+      flashPage('hack-effect', 800);
+      setTimeout(() => document.getElementById('white-scene').classList.add('active'), 600);
+    } else if(ans === 'no') {
+      flashPage('red-flash', 600);
+      setTimeout(() => location.href = 'blue.html', 500);
+    } else {
+      trR.textContent = 'INPUT NOT RECOGNIZED — TYPE yes OR no';
+      trR.classList.add('show');
+    }
+  });
+
+  const cb=g('#r-collapse'), cbR=g('#r-collapse-res');
+  if(cb) cb.addEventListener('click',()=>{
+    if(cbR){cbR.textContent='INITIATING COLLAPSE...'; cbR.classList.add('show','green');}
+    setTimeout(triggerCollapse,800);
+  });
+}
+
+/* ── Collapse ── */
+function triggerCollapse(){
+  if(dead)return; dead=true; closeNode();
+  let fc=0;
+  const iv=setInterval(()=>{
+    page.style.filter=fc%2===0?'brightness(3) invert(1)':'';
+    fc++;
+    if(fc>10){
+      clearInterval(iv); page.style.filter='';
+      nodeData.forEach(d=>{ d.el.style.transition='all 0.6s ease'; d.el.style.opacity='0'; d.el.style.transform=`translate(${R(-200,200)}px,${R(-200,200)}px) scale(0)`; });
+      cvs.style.transition='opacity 0.8s'; cvs.style.opacity='0';
+      setTimeout(()=>document.getElementById('white-scene').classList.add('active'),900);
+    }
+  },100);
+}
+</script>
 </body>
 </html>

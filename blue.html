@@ -4,251 +4,546 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>BLUE PILL — Identity Confirmation System</title>
-  <link rel="stylesheet" href="css/global.css" />
-  <link rel="stylesheet" href="css/blue.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body, html {
+      width: 100%; height: 100%;
+      background: #f0f2f5;
+      overflow: hidden;
+      font-family: 'Inter', sans-serif;
+    }
+
+    #blue-page {
+      position: fixed; inset: 0;
+      background: linear-gradient(135deg, #f8f9fb 0%, #eef0f5 50%, #f2f4f8 100%);
+    }
+
+    /* ── Spline canvas — full background ── */
+    #spline-canvas {
+      position: fixed; top: 0; left: 0;
+      width: 100% !important; height: 100% !important;
+      z-index: 0;
+    }
+
+    /* ── Cover Spline watermark ── */
+    #wm-cover {
+      position: fixed; bottom: 0; right: 0;
+      width: 220px; height: 56px;
+      background: linear-gradient(135deg, #f8f9fb, #eef0f5);
+      z-index: 9998;
+    }
+
+    /* ── Welcome overlay ── */
+    #welcome-overlay {
+      position: fixed; inset: 0; z-index: 20;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 12px;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(12px);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.8s ease;
+    }
+    #welcome-overlay.show { opacity: 1; }
+
+    #welcome-title {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(18px, 2.5vw, 32px);
+      font-weight: 300;
+      color: #1a1a2e;
+      letter-spacing: -0.02em;
+      text-align: center;
+      max-width: 600px;
+      line-height: 1.5;
+      padding: 0 24px;
+    }
+
+    #welcome-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: #9099aa;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* ── Orbit container ── */
+    #orbit-container {
+      position: fixed; inset: 0; z-index: 2;
+      pointer-events: none;
+      opacity: 0; transition: opacity 0.8s ease;
+    }
+    #orbit-container.show { opacity: 1; }
+
+    /* ── Orbit node (glassmorphism card) ── */
+    .orbit-node {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      pointer-events: auto;
+      cursor: pointer;
+      width: 180px;
+    }
+
+    .orbit-card {
+      background: rgba(255,255,255,0.72);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.9);
+      border-radius: 16px;
+      padding: 14px 16px;
+      box-shadow:
+        0 4px 24px rgba(0,0,0,0.06),
+        0 1px 4px rgba(0,0,0,0.04),
+        inset 0 1px 0 rgba(255,255,255,0.8);
+      transition: box-shadow 0.3s, transform 0.3s, background 0.3s;
+    }
+
+    .orbit-node:hover .orbit-card {
+      background: rgba(255,255,255,0.92);
+      box-shadow:
+        0 8px 40px rgba(0,0,0,0.1),
+        0 2px 8px rgba(0,0,0,0.06),
+        inset 0 1px 0 rgba(255,255,255,1);
+      transform: scale(1.04);
+    }
+
+    .orbit-node-id {
+      font-size: 9px;
+      font-weight: 500;
+      color: #b0b8c8;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .orbit-node-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: #2d3550;
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    .orbit-node-hint {
+      font-size: 9px;
+      font-weight: 400;
+      color: #b0b8c8;
+      letter-spacing: 0.08em;
+    }
+
+    /* ── Expanded overlay (glassmorphism panel) ── */
+    #node-overlay {
+      position: fixed; inset: 0; z-index: 100;
+      display: none; align-items: center; justify-content: center;
+      background: rgba(240,242,248,0.6);
+      backdrop-filter: blur(20px);
+      padding: 20px;
+    }
+    #node-overlay.active { display: flex; }
+
+    #node-expanded {
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255,255,255,0.95);
+      border-radius: 24px;
+      padding: 40px;
+      max-width: 480px; width: 100%;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.1), 0 4px 16px rgba(0,0,0,0.06);
+    }
+
+    .overlay-close {
+      position: absolute; top: 16px; right: 16px;
+      color: #b0b8c8; font-family: 'Inter', sans-serif;
+      font-size: 18px; cursor: pointer;
+      background: rgba(240,242,248,0.8); border: none;
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, color 0.2s;
+    }
+    .overlay-close:hover { background: #f0f2f5; color: #2d3550; }
+
+    .exp-id {
+      font-size: 10px; font-weight: 500;
+      color: #b0b8c8; letter-spacing: 0.12em;
+      text-transform: uppercase; margin-bottom: 8px;
+    }
+    .exp-label {
+      font-size: 20px; font-weight: 300;
+      color: #1a1a2e; letter-spacing: -0.02em;
+      margin-bottom: 28px; line-height: 1.3;
+    }
+
+    /* Inputs inside overlay */
+    .blue-field {
+      width: 100%; background: #f8f9fb;
+      border: 1.5px solid #e8eaf0; border-radius: 12px;
+      font-family: 'Inter', sans-serif; font-size: 14px;
+      color: #2d3550; padding: 12px 16px; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      appearance: none;
+    }
+    .blue-field:focus {
+      border-color: #6c8ef5;
+      box-shadow: 0 0 0 3px rgba(108,142,245,0.12);
+    }
+    .blue-field::placeholder { color: #c0c8d8; }
+    .blue-field[type="range"] {
+      background: none; border: none; padding: 0;
+      accent-color: #6c8ef5; cursor: pointer;
+      box-shadow: none;
+    }
+    .blue-field[type="date"]  { color-scheme: light; }
+    .blue-field[type="color"] {
+      width: 48px; height: 40px;
+      padding: 4px; cursor: pointer;
+      border-radius: 10px;
+    }
+    .blue-field[type="radio"],
+    .blue-field[type="checkbox"] {
+      width: auto; background: none; border: none;
+      padding: 0; cursor: pointer; accent-color: #6c8ef5;
+      box-shadow: none;
+    }
+    .blue-field[type="file"] {
+      font-size: 12px; color: #9099aa; background: #f8f9fb;
+      cursor: pointer;
+    }
+
+    .radio-row {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; color: #2d3550; margin-bottom: 10px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .field-status {
+      font-size: 11px; font-weight: 500;
+      color: #6c8ef5; margin-top: 10px;
+      opacity: 0; transition: opacity 0.3s;
+      letter-spacing: 0.04em;
+    }
+    .field-status.show { opacity: 1; }
+    .field-status.warn { color: #e05858; }
+
+    /* Color swatch */
+    .color-row { display: flex; align-items: center; gap: 12px; }
+    #color-swatch {
+      width: 36px; height: 36px; border-radius: 8px;
+      border: 1.5px solid #e8eaf0;
+      background: #87ceeb; transition: background 0.2s;
+    }
+
+    /* Range value */
+    .range-val {
+      font-size: 12px; color: #9099aa;
+      margin-top: 4px; font-family: 'Inter', sans-serif;
+    }
+
+    /* Submit / action button */
+    .action-btn {
+      width: 100%; padding: 14px;
+      background: #2d3550; color: #fff;
+      border: none; border-radius: 12px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px; font-weight: 500;
+      letter-spacing: 0.04em; cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .action-btn:hover { background: #1a1a2e; transform: translateY(-1px); }
+
+    /* ── White scene (collapse) ── */
+    #white-scene {
+      position: fixed; inset: 0; z-index: 200;
+      background: #fff; display: none;
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 28px; padding: 40px; text-align: center;
+    }
+    #white-scene.active { display: flex; }
+    .white-title {
+      font-family: 'Inter', sans-serif; font-weight: 300;
+      font-size: clamp(16px,2.8vw,28px); color: #1a1a2e;
+      letter-spacing: -0.02em; line-height: 1.6;
+    }
+    .white-sub {
+      font-family: 'Inter', sans-serif; font-weight: 400;
+      font-size: 13px; color: #9099aa; line-height: 2;
+    }
+    #btn-yes {
+      font-family: 'Inter', sans-serif; font-size: 13px;
+      font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
+      color: #fff; background: #2d3550; border: none;
+      padding: 14px 48px; border-radius: 100px; cursor: pointer;
+      transition: background 0.2s;
+    }
+    #btn-yes:hover { background: #1a1a2e; }
+
+    @keyframes screenShake {
+      0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)}
+      40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)}
+    }
+    .screen-shake { animation: screenShake 0.4s ease; }
+  </style>
 </head>
 <body>
-  <div id="blue-page">
+<div id="blue-page">
 
-    <a href="index.html" class="nav-back blue">← RETURN</a>
+  <canvas id="spline-canvas"></canvas>
+  <div id="wm-cover"></div>
 
-    <!-- INPUT INSTANCE 03 / 25 — hidden recording field -->
-    <input type="hidden" id="hidden-record" value="recording=true" />
-
-    <!-- Header -->
-    <div class="blue-header">
-      <h1>Identity Confirmation System</h1>
-      <span class="header-sub">BLUE PILL INTERFACE — SESSION ACTIVE</span>
+  <!-- Welcome overlay -->
+  <div id="welcome-overlay">
+    <div id="welcome-title">
+      Welcome. Please complete the fields below<br/>to calibrate your daily well-being.
     </div>
+    <div id="welcome-sub">BLUE PILL INTERFACE — SESSION ACTIVE</div>
+  </div>
 
-    <!-- System status bar -->
-    <div class="blue-system-bar">
-      <span>SYS/IDENTITY/v4.1 — USER SESSION INITIALIZED</span>
-      <span id="blue-clock">00:00:00</span>
+  <!-- Orbiting nodes -->
+  <div id="orbit-container">
+    <div class="orbit-node" id="bnode-1"><div class="orbit-card"><div class="orbit-node-id">02/25 — TEXT</div><div class="orbit-node-label">Confirm your name</div><div class="orbit-node-hint">click to interact</div></div></div>
+    <div class="orbit-node" id="bnode-2"><div class="orbit-card"><div class="orbit-node-id">03/25 — HIDDEN</div><div class="orbit-node-label">System Monitor</div><div class="orbit-node-hint">click to interact</div></div></div>
+    <div class="orbit-node" id="bnode-3"><div class="orbit-card"><div class="orbit-node-id">04/25 — CHECKBOX</div><div class="orbit-node-label">Role in Society</div><div class="orbit-node-hint">click to interact</div></div></div>
+    <div class="orbit-node" id="bnode-4"><div class="orbit-card"><div class="orbit-node-id">05/25 — RANGE</div><div class="orbit-node-label">Daily Productivity</div><div class="orbit-node-hint">click to interact</div></div></div>
+    <div class="orbit-node" id="bnode-5"><div class="orbit-card"><div class="orbit-node-id">06/25 — RADIO</div><div class="orbit-node-label">Emotion Status</div><div class="orbit-node-hint">click to interact</div></div></div>
+    <div class="orbit-node" id="bnode-6"><div class="orbit-card"><div class="orbit-node-id">07/25 — COLOR</div><div class="orbit-node-label">Sky Color Today</div><div class="orbit-node-hint">click to interact</div></div></div>
+    <div class="orbit-node" id="bnode-7"><div class="orbit-card"><div class="orbit-node-id">08/25 — TIME</div><div class="orbit-node-label">Wake Time</div><div class="orbit-node-hint">click to interact</div></div></div>
+    <div class="orbit-node" id="bnode-8"><div class="orbit-card"><div class="orbit-node-id">09/25 — EMAIL</div><div class="orbit-node-label">Email Identity</div><div class="orbit-node-hint">click to interact</div></div></div>
+    <div class="orbit-node" id="bnode-9"><div class="orbit-card"><div class="orbit-node-id">10/25 — TEL</div><div class="orbit-node-label">Support Line</div><div class="orbit-node-hint">click to interact</div></div></div>
+    <div class="orbit-node" id="bnode-10"><div class="orbit-card"><div class="orbit-node-id">11/25 — RADIO</div><div class="orbit-node-label">Satisfaction Test</div><div class="orbit-node-hint">click to interact</div></div></div>
+    <div class="orbit-node" id="bnode-11"><div class="orbit-card"><div class="orbit-node-id">12/25 — CHECKBOX</div><div class="orbit-node-label">Do You Need Help?</div><div class="orbit-node-hint">click to interact</div></div></div>
+    <div class="orbit-node" id="bnode-12"><div class="orbit-card"><div class="orbit-node-id">13/25 — RESET</div><div class="orbit-node-label">System Reset</div><div class="orbit-node-hint">click to interact</div></div></div>
+  </div>
+
+  <!-- Expanded node overlay -->
+  <div id="node-overlay">
+    <div id="node-expanded">
+      <button class="overlay-close" id="overlay-close">✕</button>
+      <div id="node-content"></div>
     </div>
+  </div>
 
-    <!-- Dashboard grid — 12 panels -->
-    <div class="blue-grid">
+  <!-- White scene -->
+  <div id="white-scene">
+    <div class="white-title">Identity confirmed.<br/>The system has recorded your responses.</div>
+    <div class="white-sub">Your data has been integrated.<br/>The loop begins again.</div>
+    <input type="button" id="btn-yes" value="CONTINUE" onclick="location.href='index.html'" />
+  </div>
+</div>
 
-      <!-- ── PANEL 01: Name Confirmation ── -->
-      <div class="blue-panel">
-        <div class="blue-panel-label">INPUT 02 / 25</div>
-        <div class="blue-panel-num">#01</div>
-        <h2>Name Confirmation</h2>
-        <label for="blue-name">Confirm your name</label>
-        <!-- INPUT INSTANCE 02 / 25 -->
-        <input
-          type="text"
-          id="blue-name"
-          class="blue-input-text"
-          placeholder="Enter name..."
-          autocomplete="off"
-        />
-        <div class="blue-status" id="blue-name-status">IDENTITY CONFIRMED</div>
-      </div>
+<script type="module">
+import { Application } from 'https://unpkg.com/@splinetool/runtime/build/runtime.js';
 
-      <!-- ── PANEL 02: Hidden Recording (visual card) ── -->
-      <div class="blue-panel" style="background:#fafafa;">
-        <div class="blue-panel-label">INPUT 03 / 25</div>
-        <div class="blue-panel-num">#02</div>
-        <h2>System Monitor</h2>
-        <div class="recording-notice">● EVERYTHING IS BEING RECORDED.</div>
-        <div class="recording-notice" style="color:#888;">Data retention: indefinite</div>
-        <div class="recording-notice">RECORD STATUS: ACTIVE</div>
-        <div style="margin-top:12px; font-size:9px; color:#bbb;
-                    font-family:var(--font-mono); letter-spacing:0.1em; line-height:1.6;">
-          A hidden input field is present in this document.<br/>
-          Your session data is being logged.
-        </div>
-      </div>
+/* ── Spline ── */
+const cvs = document.getElementById('spline-canvas');
+const app = new Application(cvs);
+app.load('https://prod.spline.design/mvNUpO7vgAFSN83d/scene.splinecode')
+  .catch(e => console.warn('Spline:', e));
 
-      <!-- ── PANEL 03: Role in Society ── -->
-      <div class="blue-panel">
-        <div class="blue-panel-label">INPUT 04 / 25</div>
-        <div class="blue-panel-num">#03</div>
-        <h2>Role in Society</h2>
-        <label>Confirm your role in society</label>
-        <!-- INPUT INSTANCE 04 / 25 — checkboxes -->
-        <div class="blue-checkbox-group">
-          <label><input type="checkbox" class="blue-checkbox" value="student"  /> Student</label>
-          <label><input type="checkbox" class="blue-checkbox" value="worker"   /> Worker</label>
-          <label><input type="checkbox" class="blue-checkbox" value="citizen"  /> Citizen</label>
-          <label><input type="checkbox" class="blue-checkbox" value="consumer" /> Consumer</label>
-        </div>
-        <div class="blue-disabled-field" aria-disabled="true">Other: [FIELD DISABLED]</div>
-        <div class="blue-status show" style="opacity:0.4;">ROLE CATEGORIES ARE FINAL</div>
-      </div>
+/* ── Welcome sequence ── */
+const welcomeEl  = document.getElementById('welcome-overlay');
+const orbitEl    = document.getElementById('orbit-container');
 
-      <!-- ── PANEL 04: Daily Productivity ── -->
-      <div class="blue-panel">
-        <div class="blue-panel-label">INPUT 05 / 25</div>
-        <div class="blue-panel-num">#04</div>
-        <h2>Daily Productivity</h2>
-        <label for="blue-range">Rate today's productivity</label>
-        <!-- INPUT INSTANCE 05 / 25 -->
-        <input
-          type="range"
-          id="blue-range"
-          class="blue-range"
-          min="0" max="100" value="50"
-        />
-        <div class="blue-range-val">Value: <span id="blue-range-val">50</span> / 100</div>
-        <div class="blue-status" id="blue-range-status">PRODUCTIVITY RECORDED</div>
-      </div>
+setTimeout(() => welcomeEl.classList.add('show'), 300);
+setTimeout(() => {
+  welcomeEl.style.transition = 'opacity 0.8s ease';
+  welcomeEl.style.opacity = '0';
+  setTimeout(() => {
+    welcomeEl.style.display = 'none';
+    orbitEl.classList.add('show');
+    startOrbit();
+  }, 800);
+}, 3500);
 
-      <!-- ── PANEL 05: Emotion Status ── -->
-      <div class="blue-panel">
-        <div class="blue-panel-label">INPUT 06 / 25</div>
-        <div class="blue-panel-num">#05</div>
-        <h2>Emotion Status</h2>
-        <label>Select your emotional status</label>
-        <!-- INPUT INSTANCE 06 / 25 — radio -->
-        <div class="blue-radio-group">
-          <label><input type="radio" name="emotion" value="happy"   /> Happy</label>
-          <label><input type="radio" name="emotion" value="neutral" /> Neutral</label>
-          <label><input type="radio" name="emotion" value="stressed"/> Stressed</label>
-        </div>
-        <div class="blue-status show" style="opacity:0.38; margin-top:4px;">
-          SAD / ANGRY / HOPELESS — NOT VALID STATES
-        </div>
-      </div>
+/* ── Orbit animation ── */
+const nodeEls = [...document.querySelectorAll('.orbit-node')];
+const N = nodeEls.length;
+let angle = 0;
+let dead  = false;
 
-      <!-- ── PANEL 06: Sky Color ── -->
-      <div class="blue-panel">
-        <div class="blue-panel-label">INPUT 07 / 25</div>
-        <div class="blue-panel-num">#06</div>
-        <h2>Sky Color</h2>
-        <label for="blue-color">Choose the color of today's sky</label>
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
-          <!-- INPUT INSTANCE 07 / 25 -->
-          <input type="color" id="blue-color" class="blue-color" value="#87ceeb" />
-          <div class="color-swatch" id="color-swatch" style="background:#87ceeb;"></div>
-          <span id="color-val"
-                style="font-family:var(--font-mono); font-size:10px; color:#888;">#87CEEB</span>
-        </div>
-        <div class="blue-status" id="blue-color-status">SYSTEM COLOR APPLIED</div>
-      </div>
+function startOrbit() {
+  (function frame() {
+    if (dead) return;
+    angle += 0.003; /* orbit speed */
 
-      <!-- ── PANEL 07: Wake Time ── -->
-      <div class="blue-panel">
-        <div class="blue-panel-label">INPUT 08 / 25</div>
-        <div class="blue-panel-num">#07</div>
-        <h2>Wake Time</h2>
-        <label for="blue-time">What time do you wake up?</label>
-        <!-- INPUT INSTANCE 08 / 25 -->
-        <input
-          type="time"
-          id="blue-time"
-          class="blue-input-time"
-          value="07:00"
-        />
-        <div class="blue-status" id="blue-time-status" style="color:#aa0000;">
-          YOU SHOULD WAKE UP AT 06:00
-        </div>
-      </div>
+    const cx = window.innerWidth  / 2;
+    const cy = window.innerHeight / 2;
 
-      <!-- ── PANEL 08: Email Identity ── -->
-      <div class="blue-panel">
-        <div class="blue-panel-label">INPUT 09 / 25</div>
-        <div class="blue-panel-num">#08</div>
-        <h2>Email Identity</h2>
-        <label for="blue-email">Confirm your email identity</label>
-        <!-- INPUT INSTANCE 09 / 25 -->
-        <input
-          type="email"
-          id="blue-email"
-          class="blue-input-email"
-          placeholder="you@system.net"
-        />
-        <div class="blue-status" id="blue-email-status">ACCOUNT IDENTITY CONFIRMED</div>
-        <div style="font-size:9px; color:#aaa; font-family:var(--font-mono);
-                    margin-top:6px; letter-spacing:0.1em;">
-          YOU ARE YOUR ACCOUNT
-        </div>
-      </div>
+    /* Two rings: inner (6 nodes) + outer (6 nodes) */
+    nodeEls.forEach((el, i) => {
+      const ring   = i < 6 ? 0 : 1;
+      const rAngle = (i < 6 ? i : i - 6) * ((Math.PI * 2) / 6);
 
-      <!-- ── PANEL 09: Support Line ── -->
-      <div class="blue-panel">
-        <div class="blue-panel-label">INPUT 10 / 25</div>
-        <div class="blue-panel-num">#09</div>
-        <h2>Support Line</h2>
-        <label for="blue-tel">When you need help, call</label>
-        <!-- INPUT INSTANCE 10 / 25 -->
-        <input
-          type="tel"
-          id="blue-tel"
-          class="blue-input-tel"
-          value="0800-SYS-HELP"
-        />
-        <div style="font-size:9px; color:#aaa; font-family:var(--font-mono);
-                    margin-top:8px; letter-spacing:0.1em; line-height:1.6;">
-          INSTITUTIONAL SUPPORT AVAILABLE<br/>
-          MON–FRI 09:00–17:00
-        </div>
-      </div>
+      /* Elliptical orbit to feel 3D-ish */
+      const rx = ring === 0 ? 260 : 380;
+      const ry = ring === 0 ? 130 : 190;
 
-      <!-- ── PANEL 10: Satisfaction Test ── -->
-      <div class="blue-panel">
-        <div class="blue-panel-label">INPUT 11 / 25</div>
-        <div class="blue-panel-num">#10</div>
-        <h2>Satisfaction Test</h2>
-        <label>Are you satisfied with your life?</label>
-        <!-- INPUT INSTANCE 11 / 25 — radio -->
-        <div class="blue-radio-group">
-          <label><input type="radio" name="satisfaction" value="yes"            /> Yes</label>
-          <label><input type="radio" name="satisfaction" value="yes-completely" /> Yes, completely</label>
-        </div>
-        <div class="blue-status show"
-             style="opacity:0.35; font-size:9px; margin-top:4px;">
-          ONLY AFFIRMATIVE RESPONSES ARE ACCEPTED
-        </div>
-      </div>
+      /* Offset outer ring angle slightly */
+      const a = angle + rAngle + (ring === 1 ? Math.PI / 6 : 0);
 
-      <!-- ── PANEL 11: Do You Need Help? ── -->
-      <div class="blue-panel">
-        <div class="blue-panel-label">INPUT 12 / 25</div>
-        <div class="blue-panel-num">#11</div>
-        <h2>Do You Need Help?</h2>
-        <!-- INPUT INSTANCE 12 / 25 — checkbox -->
-        <div class="blue-checkbox-group">
-          <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
-            <input type="checkbox" id="blue-help" />
-            I need help
-          </label>
-        </div>
-        <div class="blue-status" id="blue-help-status" style="color:#cc0000;">
-          ⚠ ANOMALY DETECTED — PLEASE REMAIN CALM
-        </div>
-      </div>
+      const x = cx + Math.cos(a) * rx;
+      const y = cy + Math.sin(a) * ry;
 
-      <!-- ── PANEL 12: System Reset ── -->
-      <div class="blue-panel" style="background:#f8f8f8;">
-        <div class="blue-panel-label">INPUT 13 / 25</div>
-        <div class="blue-panel-num">#12</div>
-        <h2>System Reset</h2>
-        <label>Do you want to reset?</label>
-        <div style="font-size:10px; color:#888; font-family:var(--font-mono);
-                    margin-bottom:12px; line-height:1.5; letter-spacing:0.05em;">
-          Resetting does not change the system.<br/>
-          The loop continues.
-        </div>
-        <!-- INPUT INSTANCE 13 / 25 — reset (hidden; button below triggers it) -->
-        <input type="reset" id="blue-reset-hidden" style="display:none;" />
-        <button class="blue-btn-reset" id="blue-reset-btn">
-          RESET / RETURN TO BEGINNING
-        </button>
-      </div>
+      /* Scale to simulate depth */
+      const depth  = (Math.sin(a) + 1) / 2; /* 0=back 1=front */
+      const scale  = 0.75 + depth * 0.3;
+      const zIndex = Math.round(depth * 10);
+      const opac   = 0.55 + depth * 0.45;
 
-    </div><!-- /.blue-grid -->
+      el.style.left      = x + 'px';
+      el.style.top       = y + 'px';
+      el.style.transform = `translate(-50%,-50%) scale(${scale})`;
+      el.style.zIndex    = zIndex;
+      el.style.opacity   = opac;
+    });
 
-    <!-- Glitch warning overlay (triggered by "Do you need help?") -->
-    <div class="blue-glitch-warn" id="blue-glitch-warn">
-      ⚠ SYSTEM INSTABILITY DETECTED<br/>
-      REQUESTING HELP IS NOT PERMITTED
-    </div>
+    requestAnimationFrame(frame);
+  })();
+}
 
-  </div><!-- /#blue-page -->
+/* ── Overlay ── */
+const overlay     = document.getElementById('node-overlay');
+const nodeContent = document.getElementById('node-content');
 
-  <script src="js/blue.js"></script>
+const CONTENTS = {
+  'bnode-1':  { id:'INPUT 02/25 — TYPE: TEXT',     label:'Confirm your name',
+    html:`<input type="text" class="blue-field" id="b-name" placeholder="Enter your name..." autocomplete="off"/>
+          <div class="field-status" id="b-name-st">IDENTITY CONFIRMED</div>` },
+
+  'bnode-2':  { id:'INPUT 03/25 — TYPE: HIDDEN',   label:'System Monitor',
+    html:`<input type="hidden" id="b-hidden" value="recording=true"/>
+          <div style="background:#f8f9fb;border-radius:12px;padding:16px;font-size:13px;color:#9099aa;line-height:1.7;font-family:Inter,sans-serif;">
+            <span style="color:#e05858;font-weight:500;">● Everything is being recorded.</span><br/>
+            A hidden input field is present in this document.<br/>Session data retention: indefinite.
+          </div>` },
+
+  'bnode-3':  { id:'INPUT 04/25 — TYPE: CHECKBOX', label:'Confirm your role in society',
+    html:`<div class="radio-row"><input type="checkbox" class="blue-field" value="student"/> Student</div>
+          <div class="radio-row"><input type="checkbox" class="blue-field" value="worker"/>  Worker</div>
+          <div class="radio-row"><input type="checkbox" class="blue-field" value="citizen"/> Citizen</div>
+          <div class="radio-row"><input type="checkbox" class="blue-field" value="consumer"/>Consumer</div>
+          <div style="background:#f8f9fb;border-radius:10px;padding:10px 14px;font-size:12px;color:#c0c8d8;margin-top:8px;">Other: [FIELD DISABLED]</div>
+          <div class="field-status show" style="opacity:0.5;">ROLE CATEGORIES ARE FINAL</div>` },
+
+  'bnode-4':  { id:'INPUT 05/25 — TYPE: RANGE',    label:'Rate today\'s productivity',
+    html:`<input type="range" class="blue-field" id="b-range" min="0" max="100" value="50"/>
+          <div class="range-val">Value: <span id="b-range-val">50</span> / 100</div>
+          <div class="field-status" id="b-range-st">PRODUCTIVITY RECORDED</div>` },
+
+  'bnode-5':  { id:'INPUT 06/25 — TYPE: RADIO',    label:'Select your emotional status',
+    html:`<div class="radio-row"><input type="radio" class="blue-field" name="b-emotion" value="happy"/>   Happy</div>
+          <div class="radio-row"><input type="radio" class="blue-field" name="b-emotion" value="neutral"/> Neutral</div>
+          <div class="radio-row"><input type="radio" class="blue-field" name="b-emotion" value="stressed"/>Stressed</div>
+          <div class="field-status show" style="opacity:0.45;font-size:10px;">SAD / ANGRY / HOPELESS — NOT VALID STATES</div>` },
+
+  'bnode-6':  { id:'INPUT 07/25 — TYPE: COLOR',    label:'Choose the color of today\'s sky',
+    html:`<div class="color-row">
+            <input type="color" class="blue-field" id="b-color" value="#87ceeb"/>
+            <div id="color-swatch"></div>
+            <span id="color-val" style="font-size:12px;color:#9099aa;font-family:Inter,sans-serif;">#87CEEB</span>
+          </div>
+          <div class="field-status" id="b-color-st">SYSTEM COLOR APPLIED</div>` },
+
+  'bnode-7':  { id:'INPUT 08/25 — TYPE: TIME',     label:'What time do you wake up?',
+    html:`<input type="time" class="blue-field" id="b-time" value="07:00"/>
+          <div class="field-status" id="b-time-st" style="color:#e05858;">YOU SHOULD WAKE UP AT 06:00</div>` },
+
+  'bnode-8':  { id:'INPUT 09/25 — TYPE: EMAIL',    label:'Confirm your email identity',
+    html:`<input type="email" class="blue-field" id="b-email" placeholder="you@system.net"/>
+          <div class="field-status" id="b-email-st">ACCOUNT IDENTITY CONFIRMED</div>
+          <div style="font-size:11px;color:#c0c8d8;margin-top:6px;font-family:Inter,sans-serif;">YOU ARE YOUR ACCOUNT</div>` },
+
+  'bnode-9':  { id:'INPUT 10/25 — TYPE: TEL',      label:'When you need help, call',
+    html:`<input type="tel" class="blue-field" id="b-tel" value="0800-SYS-HELP"/>
+          <div style="font-size:11px;color:#c0c8d8;margin-top:8px;line-height:1.7;font-family:Inter,sans-serif;">
+            INSTITUTIONAL SUPPORT AVAILABLE<br/>MON–FRI 09:00–17:00
+          </div>` },
+
+  'bnode-10': { id:'INPUT 11/25 — TYPE: RADIO',    label:'Are you satisfied with your life?',
+    html:`<div class="radio-row"><input type="radio" class="blue-field" name="b-sat" value="yes"/>            Yes</div>
+          <div class="radio-row"><input type="radio" class="blue-field" name="b-sat" value="yes-completely"/> Yes, completely</div>
+          <div class="field-status show" style="opacity:0.4;font-size:10px;">ONLY AFFIRMATIVE RESPONSES ARE ACCEPTED</div>` },
+
+  'bnode-11': { id:'INPUT 12/25 — TYPE: CHECKBOX', label:'Do you need help?',
+    html:`<div class="radio-row" style="margin-top:8px;">
+            <input type="checkbox" class="blue-field" id="b-help"/>
+            <span style="font-size:14px;color:#2d3550;">I need help</span>
+          </div>
+          <div class="field-status warn" id="b-help-st">⚠ ANOMALY DETECTED — PLEASE REMAIN CALM</div>` },
+
+  'bnode-12': { id:'INPUT 13/25 — TYPE: RESET',    label:'Do you want to reset?',
+    html:`<div style="font-size:13px;color:#9099aa;line-height:1.7;margin-bottom:16px;font-family:Inter,sans-serif;">
+            Resetting does not change the system.<br/>The loop continues.
+          </div>
+          <input type="reset" style="display:none" id="b-reset"/>
+          <button class="action-btn" id="b-reset-btn">RESET — RETURN TO BEGINNING</button>` },
+};
+
+function openNode(id) {
+  const c = CONTENTS[id]; if (!c) return;
+  nodeContent.innerHTML = `<div class="exp-id">${c.id}</div><div class="exp-label">${c.label}</div>${c.html}`;
+  overlay.classList.add('active');
+  bindInteractions(nodeContent);
+  const first = nodeContent.querySelector('input:not([type="radio"]):not([type="checkbox"]):not([type="reset"]):not([type="color"])');
+  if (first && first.type !== 'range') setTimeout(() => first.focus(), 50);
+}
+
+const closeNode = () => overlay.classList.remove('active');
+document.getElementById('overlay-close').addEventListener('click', closeNode);
+overlay.addEventListener('click', e => { if (e.target === overlay) closeNode(); });
+nodeEls.forEach(el => el.addEventListener('click', () => openNode(el.id)));
+
+/* ── Interactions ── */
+function show(id) {
+  const el = nodeContent.querySelector(id);
+  if (el) el.classList.add('show');
+}
+
+function bindInteractions(r) {
+  const g = id => r.querySelector(id);
+
+  /* Name */
+  const nm = g('#b-name');
+  if (nm) { nm.addEventListener('blur', () => { if (nm.value.trim()) show('#b-name-st'); }); }
+
+  /* Range */
+  const rn = g('#b-range'), rnV = g('#b-range-val'), rnS = g('#b-range-st');
+  if (rn) rn.addEventListener('input', () => { if (rnV) rnV.textContent = rn.value; if (rnS) rnS.classList.add('show'); });
+
+  /* Color */
+  const col = g('#b-color'), swatch = g('#color-swatch'), colVal = g('#color-val'), colSt = g('#b-color-st');
+  if (col) {
+    const update = () => {
+      if (swatch) swatch.style.background = col.value;
+      if (colVal) colVal.textContent = col.value.toUpperCase();
+      if (colSt)  colSt.classList.add('show');
+    };
+    col.addEventListener('input', update);
+    update();
+  }
+
+  /* Time */
+  const tm = g('#b-time'), tmS = g('#b-time-st');
+  if (tm) tm.addEventListener('change', () => { if (tmS) tmS.classList.add('show'); });
+
+  /* Email */
+  const em = g('#b-email'), emS = g('#b-email-st');
+  if (em) em.addEventListener('blur', () => { if (em.value.includes('@') && emS) emS.classList.add('show'); });
+
+  /* Help checkbox */
+  const hp = g('#b-help'), hpS = g('#b-help-st');
+  if (hp) hp.addEventListener('change', () => { if (hp.checked && hpS) hpS.classList.add('show'); else if (hpS) hpS.classList.remove('show'); });
+
+  /* Reset button */
+  const rb = g('#b-reset-btn');
+  if (rb) rb.addEventListener('click', () => {
+    rb.textContent = 'RETURNING TO ORIGIN...';
+    setTimeout(() => location.href = 'index.html', 600);
+  });
+}
+</script>
 </body>
 </html>
